@@ -4,150 +4,94 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <title>Be My Valentine 💘</title>
+  <title>Be My Valentine 💌</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#sceneRoot">Skip to content</a>
 
-  <header class="site-header" role="banner">
-    <nav class="nav" aria-label="Page">
-      <a class="brand" href="#top" data-scroll>💗 Valentine</a>
-
-      <div class="nav-links">
-        <a href="#letter" data-scroll>Letter</a>
-        <a href="#puzzle" data-scroll>Puzzle</a>
-        <a href="#question" data-scroll>Question</a>
-      </div>
-
-      <button id="musicToggle" class="btn btn-ghost" type="button" aria-pressed="false">
-        <span class="icon" aria-hidden="true">♫</span>
-        <span class="music-label">Music: Off</span>
-      </button>
-    </nav>
-  </header>
-
-  <div id="top" class="hearts-bg" aria-hidden="true"></div>
-
-  <!-- Optional audio (off by default, only starts after user interaction) -->
+  <!-- Optional audio (off by default) -->
   <audio id="bgm" preload="none" loop>
     <source src="assets/music.mp3" type="audio/mpeg" />
   </audio>
 
-  <main id="main" class="main" role="main">
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="heroTitle">
-      <div class="hero-inner">
-        <p class="eyebrow">A little page, made with a lot of love</p>
-        <h1 id="heroTitle" class="title">
-          Will you open this Valentine’s surprise?
-        </h1>
-        <p class="subtitle">
-          Tap the envelope, solve the puzzle, then answer one tiny question 💞
-        </p>
+  <main id="sceneRoot" class="scene-root" role="main" aria-label="Valentine slideshow">
+    <!-- Top-right controls -->
+    <div class="ui-bar">
+      <button id="musicToggle" class="btn btn-ghost" type="button" aria-pressed="false">
+        <span aria-hidden="true">♫</span>
+        <span class="music-label">Music: Off</span>
+      </button>
+    </div>
 
-        <div class="hero-actions">
-          <a class="btn" href="#letter" data-scroll>Start</a>
-          <button class="btn btn-ghost" type="button" id="revealHint">
-            Show hints
-          </button>
-        </div>
+    <!-- SCENE 1: Envelope only -->
+    <section class="scene scene-active" data-scene="1" aria-label="Envelope scene">
+      <div class="stage">
+        <button
+          id="envelopeBtn"
+          class="envelope"
+          type="button"
+          aria-expanded="false"
+          aria-controls="letterCard"
+        >
+          <span class="sr-only">Open the envelope</span>
 
-        <div class="hint" id="hintBox" hidden>
-          <ul>
-            <li>Envelope: click or press Enter/Space.</li>
-            <li>Puzzle: click tiles next to the empty spot (or use keyboard).</li>
-            <li>Captions: tap the “💬” buttons to reveal.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+          <div class="env-back" aria-hidden="true"></div>
+          <div class="env-flap" aria-hidden="true"></div>
 
-    <!-- LOVE LETTER -->
-    <section id="letter" class="section" aria-labelledby="letterTitle">
-      <div class="section-head">
-        <h2 id="letterTitle">A Love Letter</h2>
-        <p class="section-subtitle">Click the envelope to open it.</p>
-      </div>
+          <div class="stamp" aria-hidden="true">
+            <span class="stamp-heart">❤</span>
+          </div>
 
-      <div class="card">
-        <div class="letter-wrap">
-          <button
-            id="envelopeBtn"
-            class="envelope"
-            type="button"
-            aria-expanded="false"
-            aria-controls="letterPaper"
-          >
-            <span class="sr-only">Open the envelope</span>
-            <span class="env-body" aria-hidden="true"></span>
-            <span class="env-flap" aria-hidden="true"></span>
-            <span class="env-seal" aria-hidden="true">💗</span>
-          </button>
-
-          <article
-            id="letterPaper"
-            class="paper"
-            tabindex="-1"
-            aria-label="Love letter"
-          >
-            <h3 class="paper-title">My Dearest,</h3>
-
-            <p>
-              I don’t need a special day to love you—<em>but I’ll happily take one</em>.
-              You make ordinary moments feel like soft music and warm light.
-            </p>
-
-            <p>
-              Thank you for the laughs, the patience, the little glances that say,
-              “we’re in this together.” I choose you—today, and all the tomorrows.
-            </p>
-
-            <p class="paper-signoff">
-              Forever yours, <br />
-              <span class="sig">💞</span>
-            </p>
-
-            <div class="caption-row">
-              <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap1">
-                💬 Reveal a tiny secret
-              </button>
-              <p id="cap1" class="caption" hidden>
-                You’re my favorite notification.
-              </p>
-            </div>
+          <article id="letterCard" class="card-in-envelope" tabindex="-1" aria-label="Love note card">
+            <p class="card-line">To my favorite person,</p>
+            <p class="card-line muted">I made you a tiny adventure.</p>
+            <p class="card-line">Open me 💗</p>
           </article>
-        </div>
+        </button>
+      </div>
+      <p class="scene-hint" aria-hidden="true">Click the envelope to begin</p>
+    </section>
 
-        <div class="note">
-          <p>
-            <strong>Tip:</strong> Once opened, the envelope will fade into the background so you can keep going.
-          </p>
-        </div>
+    <!-- SCENE 2: Square overlay with text + Next -->
+    <section class="scene" data-scene="2" aria-label="Message overlay scene">
+      <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay1Title">
+        <h1 id="overlay1Title" class="overlay-title">A little note…</h1>
+        <p class="overlay-text">
+          Love is made of small moments — the kind we keep choosing.  
+          Ready for the next part?
+        </p>
+
+        <button id="toPuzzleBtn" class="btn" type="button">
+          Next
+        </button>
+
+        <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap1">
+          💬 Reveal-on-tap caption
+        </button>
+        <p id="cap1" class="caption" hidden>
+          If kisses were currency, I’d be rich.
+        </p>
       </div>
     </section>
 
-    <!-- PUZZLE -->
-    <section id="puzzle" class="section" aria-labelledby="puzzleTitle">
-      <div class="section-head">
-        <h2 id="puzzleTitle">A Little Puzzle</h2>
-        <p class="section-subtitle">
-          Slide the tiles to reveal the photo. Solve it to unlock the final question.
+    <!-- SCENE 3: Puzzle overlay -->
+    <section class="scene" data-scene="3" aria-label="Puzzle scene">
+      <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="puzzleTitle">
+        <h2 id="puzzleTitle" class="overlay-title">Slide Puzzle</h2>
+        <p class="overlay-text">
+          This one is intentionally short — about <strong>3–4 moves</strong> to solve.
         </p>
-      </div>
 
-      <div class="card">
         <div class="puzzle-top">
           <div class="puzzle-meta" role="status" aria-live="polite">
             <span id="moves">Moves: 0</span>
             <span class="dot" aria-hidden="true">•</span>
             <span id="puzzleStatus">Not solved</span>
           </div>
-
           <div class="puzzle-actions">
-            <button id="shuffleBtn" class="btn" type="button">Shuffle</button>
-            <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+            <button id="shuffleBtn" class="btn btn-ghost" type="button">Reshuffle</button>
           </div>
         </div>
 
@@ -159,78 +103,50 @@
             aria-label="3 by 3 sliding tile puzzle"
           ></div>
 
-          <div class="puzzle-side">
-            <div class="preview" aria-label="Image preview">
-              <div class="preview-img" aria-hidden="true"></div>
-              <p class="preview-label">Preview</p>
-            </div>
-
-            <div class="caption-row">
-              <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap2">
-                💬 Reveal a caption
-              </button>
-              <p id="cap2" class="caption" hidden>
-                Every piece finds its place—just like us.
-              </p>
-            </div>
+          <div class="preview" aria-label="Image preview">
+            <div class="preview-img" aria-hidden="true"></div>
+            <p class="preview-label">Preview</p>
           </div>
         </div>
+
+        <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap2">
+          💬 Reveal-on-tap caption
+        </button>
+        <p id="cap2" class="caption" hidden>
+          Every piece finds its place — just like us.
+        </p>
       </div>
     </section>
 
-    <!-- QUESTION -->
-    <section id="question" class="section" aria-labelledby="questionTitle">
-      <div class="section-head">
-        <h2 id="questionTitle">One Last Thing…</h2>
-        <p class="section-subtitle">This appears after the puzzle is solved.</p>
-      </div>
+    <!-- SCENE 4: Final question overlay -->
+    <section class="scene" data-scene="4" aria-label="Valentine question scene">
+      <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="questionTitle">
+        <h2 id="questionTitle" class="overlay-title">One last thing…</h2>
 
-      <div class="card card-center">
-        <div id="valentineCard" class="valentine-card" hidden>
-          <div class="sparkle" aria-hidden="true"></div>
+        <h3 class="val-title">
+          <span aria-hidden="true">💘</span>
+          <span id="typingText" class="typing" aria-live="polite"></span>
+        </h3>
 
-          <h3 class="val-title">
-            <span class="heart" aria-hidden="true">💘</span>
-            <span id="typingText" class="typing" aria-live="polite"></span>
-          </h3>
+        <p class="overlay-text">
+          No pressure — just a little courage and a lot of heart.
+        </p>
 
-          <p class="val-sub">
-            No pressure. Just… my heart will do a tiny happy dance if you say yes.
-          </p>
-
-          <div class="val-actions">
-            <button id="yesBtn" class="btn" type="button">Yes</button>
-            <button id="noBtn" class="btn btn-ghost" type="button">No</button>
-          </div>
-
-          <p id="response" class="response" role="status" aria-live="polite"></p>
-
-          <div class="caption-row">
-            <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap3">
-              💬 One more caption
-            </button>
-            <p id="cap3" class="caption" hidden>
-              If love is a language, you’re my favorite sentence.
-            </p>
-          </div>
+        <div class="val-actions">
+          <button id="yesBtn" class="btn" type="button">Yes</button>
+          <button id="noBtn" class="btn btn-ghost" type="button">No</button>
         </div>
 
-        <div id="lockedMessage" class="locked">
-          <p class="locked-title">🔒 Locked</p>
-          <p class="locked-text">
-            Solve the puzzle to reveal the Valentine card.
-          </p>
-          <a class="btn btn-ghost" href="#puzzle" data-scroll>Go to Puzzle</a>
-        </div>
+        <p id="response" class="response" role="status" aria-live="polite"></p>
+
+        <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap3">
+          💬 Reveal-on-tap caption
+        </button>
+        <p id="cap3" class="caption" hidden>
+          If love is a language, you’re my favorite sentence.
+        </p>
       </div>
     </section>
-
-    <footer class="footer">
-      <p>
-        Made with <span aria-hidden="true">💗</span><span class="sr-only">love</span> —
-        press <kbd>Tab</kbd> to explore, <kbd>Enter</kbd>/<kbd>Space</kbd> to activate buttons.
-      </p>
-    </footer>
   </main>
 
   <script src="app.js"></script>
