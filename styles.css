@@ -157,14 +157,18 @@ body{
   background: transparent;
   cursor: pointer;
   padding: 0;
+  /* Fade/slide in when the page loads */
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  animation: envelope-intro 900ms ease forwards 220ms;
 }
 .envelope:focus-visible{ outline: none; box-shadow: var(--focus); border-radius: 18px; }
 
 .env-back{
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, var(--cream), var(--cream-shadow));
-  border: 1px solid rgba(31,26,29,0.16);
+  background: linear-gradient(180deg, #f4e4c6, #e1cda4);
+  border: 1px solid rgba(31,26,29,0.20);
   border-radius: 18px;
   box-shadow: var(--shadow);
 }
@@ -177,11 +181,16 @@ body{
   top: 0;
   height: 55%;
   border-radius: 18px 18px 14px 14px;
-  background: linear-gradient(180deg, #f8f0de, #efe2c8);
+  background: linear-gradient(180deg, #fdf5e4, #f1e1c5);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top center;
   transform: rotateX(0deg);
-  transition: transform 700ms cubic-bezier(.2,.9,.2,1);
+  box-shadow:
+    inset 0 -2px 0 rgba(255,255,255,0.65),
+    0 3px 6px rgba(0,0,0,0.04);
+  transition:
+    transform 700ms cubic-bezier(.2,.9,.2,1),
+    box-shadow 400ms ease;
 }
 
 /* Stamp */
@@ -198,6 +207,7 @@ body{
   display: grid;
   place-items: center;
   box-shadow: 0 16px 30px rgba(0,0,0,0.14);
+  transition: opacity 420ms ease, transform 420ms ease;
 }
 .stamp-heart{
   font-size: 34px;
@@ -208,16 +218,17 @@ body{
 /* Card inside the envelope */
 .card-in-envelope{
   position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 18px;
-  height: 200px;
+  left: 24px;
+  right: 24px;
+  bottom: 26px;
+  height: 190px;
   border-radius: 14px;
   background: rgba(255,255,255,0.92);
   border: 1px solid rgba(31,26,29,0.14);
   padding: 16px;
   box-shadow: 0 16px 40px rgba(0,0,0,0.14);
-  transform: translateY(80px);
+  /* start tucked "inside" the envelope */
+  transform: translateY(36px);
   opacity: 0;
   transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease;
 }
@@ -232,6 +243,22 @@ body{
 .envelope.open .card-in-envelope{
   transform: translateY(-10px);
   opacity: 1;
+}
+
+.envelope.open .stamp{
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.85);
+}
+
+@keyframes envelope-intro{
+  from{
+    opacity: 0;
+    transform: translateY(18px) scale(0.95);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* =========================
