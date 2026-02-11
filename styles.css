@@ -36,7 +36,12 @@ body{
 }
 
 @media (prefers-reduced-motion: reduce){
-  *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  *{
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
 }
 
 .skip-link{
@@ -157,6 +162,8 @@ body{
   background: transparent;
   cursor: pointer;
   padding: 0;
+  perspective: 1200px;
+  overflow: visible;
   /* Fade/slide in when the page loads */
   opacity: 0;
   transform: translateY(14px) scale(0.98);
@@ -167,11 +174,26 @@ body{
 .env-back{
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #f4e4c6, #e1cda4);
+  background: linear-gradient(180deg, #f5e8cd, #e6d1ac);
   border: 1px solid rgba(31,26,29,0.20);
   border-radius: 18px;
   box-shadow: var(--shadow);
   z-index: 1;
+}
+
+/* Inner lining */
+.env-inner{
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 12px;
+  bottom: 12px;
+  background: linear-gradient(180deg, #fdf5e4, #f2e5ca);
+  border: 1px solid rgba(31,26,29,0.12);
+  border-radius: 14px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 66%, 0 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.55);
+  z-index: 2;
 }
 
 /* Triangular flap */
@@ -180,7 +202,7 @@ body{
   left: 0;
   right: 0;
   top: 0;
-  height: 55%;
+  height: 56%;
   border-radius: 18px 18px 14px 14px;
   background: linear-gradient(180deg, #fdf5e4, #f1e1c5);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
@@ -190,9 +212,27 @@ body{
     inset 0 -2px 0 rgba(255,255,255,0.65),
     0 3px 6px rgba(0,0,0,0.04);
   transition:
-    transform 700ms cubic-bezier(.2,.9,.2,1),
+    transform 760ms cubic-bezier(.2,.9,.2,1),
     box-shadow 400ms ease;
   z-index: 3;
+}
+
+/* Front pocket (outside layer) that keeps the card "inside" */
+.env-front{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 66%;
+  border-radius: 0 0 18px 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0)),
+    linear-gradient(180deg, #efdcb7, #e2cca5);
+  border: 1px solid rgba(31,26,29,0.18);
+  border-top: 0;
+  clip-path: polygon(0 100%, 0 26%, 50% 58%, 100% 26%, 100% 100%);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.28);
+  z-index: 5;
 }
 
 /* Stamp */
@@ -209,8 +249,8 @@ body{
   display: grid;
   place-items: center;
   box-shadow: 0 16px 30px rgba(0,0,0,0.14);
-  transition: opacity 420ms ease, transform 420ms ease;
-  z-index: 4;
+  transition: opacity 340ms ease, transform 340ms ease;
+  z-index: 6;
 }
 .stamp-heart{
   font-size: 34px;
@@ -221,20 +261,22 @@ body{
 /* Card inside the envelope */
 .card-in-envelope{
   position: absolute;
-  left: 18px;
-  right: 18px;
-  top: 0;
-  height: 210px;
+  left: 12px;
+  right: 12px;
+  top: 10px;
+  height: 236px;
   border-radius: 14px;
   background: rgba(255,255,255,0.92);
   border: 1px solid rgba(31,26,29,0.14);
   padding: 16px;
   box-shadow: 0 16px 40px rgba(0,0,0,0.14);
-  /* start level with the top edge, tucked down inside */
-  transform: translateY(40px);
-  opacity: 0;
-  transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease;
-  z-index: 2;
+  /* Start tucked inside the pocket */
+  transform: translateY(96px);
+  opacity: 1;
+  transition:
+    transform 920ms cubic-bezier(.2,.9,.2,1) 440ms,
+    opacity 260ms ease 440ms;
+  z-index: 4;
 }
 .card-line{
   margin: 0 0 10px 0;
@@ -242,11 +284,11 @@ body{
 }
 .card-line.muted{ color: var(--muted); }
 
-/* Open state: flap flips + card slides out a bit */
-.envelope.open .env-flap{ transform: rotateX(160deg); }
+/* Open state: flap flips first, then card rises */
+.envelope.open .env-flap{ transform: rotateX(172deg); }
 .envelope.open .card-in-envelope{
-  /* peek up into the middle of the flap area */
-  transform: translateY(-30px);
+  /* Rises to about half the flap's opened height */
+  transform: translateY(-58px);
   opacity: 1;
 }
 

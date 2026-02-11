@@ -86,13 +86,13 @@ envelopeBtn?.addEventListener("click", async () => {
 
   envelopeBtn.classList.add("open");
   envelopeBtn.setAttribute("aria-expanded", "true");
-  await delay(prefersReducedMotion ? 50 : 650);
+  await delay(prefersReducedMotion ? 50 : 820);
 
   // Focus the card for accessibility
   letterCard?.focus?.({ preventScroll: true });
 
   // After the card slides out a little, transition
-  await delay(prefersReducedMotion ? 50 : 550);
+  await delay(prefersReducedMotion ? 50 : 1040);
   setScene(2);
 });
 
