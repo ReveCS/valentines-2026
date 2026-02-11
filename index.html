@@ -1,156 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <title>Be My Valentine 💌</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine? 💌</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
-
 <body>
-  <a class="skip-link" href="#sceneRoot">Skip to content</a>
-
-  <!-- Optional audio (off by default) -->
-  <audio id="bgm" preload="none" loop>
-    <source src="assets/music.mp3" type="audio/mpeg" />
-  </audio>
-
-  <main id="sceneRoot" class="scene-root" role="main" aria-label="Valentine slideshow">
-    <!-- Top-right controls -->
-    <div class="ui-bar">
-      <button id="musicToggle" class="btn btn-ghost" type="button" aria-pressed="false">
-        <span aria-hidden="true">♫</span>
-        <span class="music-label">Music: Off</span>
-      </button>
-    </div>
-
-    <!-- SCENE 1: Envelope only -->
-    <section class="scene scene-active" data-scene="1" aria-label="Envelope scene">
-      <div class="stage">
-        <button
-          id="envelopeBtn"
-          class="envelope"
-          type="button"
-          aria-expanded="false"
-          aria-controls="letterCard"
-        >
-          <span class="sr-only">Open the envelope</span>
-
-          <div class="env-back" aria-hidden="true"></div>
-          <div class="env-inner" aria-hidden="true"></div>
-          <div class="env-flap" aria-hidden="true"></div>
-          <div class="env-front" aria-hidden="true"></div>
-
-          <div class="stamp" aria-hidden="true">
-            <span class="stamp-heart">❤</span>
-          </div>
-
-          <article id="letterCard" class="card-in-envelope" tabindex="-1" aria-label="Love note card">
-            <p class="card-line">To my favorite person,</p>
-            <p class="card-line muted">I made you a tiny adventure.</p>
-            <p class="card-line">Open me 💗</p>
-          </article>
-        </button>
-      </div>
-      <p class="scene-hint" aria-hidden="true">Click the envelope to begin</p>
-    </section>
-
-    <!-- SCENE 2: Square overlay with text + Next -->
-    <section class="scene" data-scene="2" aria-label="Message overlay scene">
-      <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay1Title">
-        <h1 id="overlay1Title" class="overlay-title">A little note…</h1>
-        <p class="overlay-text">
-          Love is made of small moments — the kind we keep choosing.  
-          Ready for the next part?
-        </p>
-
-        <button id="toPuzzleBtn" class="btn" type="button">
-          Next
-        </button>
-
-        <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap1">
-          💬 Reveal-on-tap caption
-        </button>
-        <p id="cap1" class="caption" hidden>
-          If kisses were currency, I’d be rich.
-        </p>
-      </div>
-    </section>
-
-    <!-- SCENE 3: Puzzle overlay -->
-    <section class="scene" data-scene="3" aria-label="Puzzle scene">
-      <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="puzzleTitle">
-        <h2 id="puzzleTitle" class="overlay-title">Slide Puzzle</h2>
-        <p class="overlay-text">
-          This one is intentionally short — about <strong>3–4 moves</strong> to solve.
-        </p>
-
-        <div class="puzzle-top">
-          <div class="puzzle-meta" role="status" aria-live="polite">
-            <span id="moves">Moves: 0</span>
-            <span class="dot" aria-hidden="true">•</span>
-            <span id="puzzleStatus">Not solved</span>
-          </div>
-          <div class="puzzle-actions">
-            <button id="shuffleBtn" class="btn btn-ghost" type="button">Reshuffle</button>
-          </div>
+    <!-- Scene 1: 8-bit Envelope -->
+    <section class="scene is-active" id="scene-1">
+        <div class="scene-content">
+            <div class="envelope-container">
+                <div class="envelope" id="envelope">
+                    <!-- Envelope body -->
+                    <div class="envelope-body">
+                        <div class="pixel-row row-1"></div>
+                        <div class="pixel-row row-2"></div>
+                        <div class="pixel-row row-3"></div>
+                        <div class="pixel-row row-4"></div>
+                        <div class="pixel-row row-5"></div>
+                        <div class="pixel-row row-6"></div>
+                        <div class="pixel-row row-7"></div>
+                        <div class="pixel-row row-8"></div>
+                        <div class="pixel-row row-9"></div>
+                        <div class="pixel-row row-10"></div>
+                    </div>
+                    
+                    <!-- Heart seal on envelope -->
+                    <div class="heart-seal">
+                        <div class="heart-row h-row-1"></div>
+                        <div class="heart-row h-row-2"></div>
+                        <div class="heart-row h-row-3"></div>
+                        <div class="heart-row h-row-4"></div>
+                        <div class="heart-row h-row-5"></div>
+                    </div>
+                    
+                    <!-- Flap (separate so it can animate) -->
+                    <div class="envelope-flap" id="flap">
+                        <div class="flap-row f-row-1"></div>
+                        <div class="flap-row f-row-2"></div>
+                        <div class="flap-row f-row-3"></div>
+                        <div class="flap-row f-row-4"></div>
+                        <div class="flap-row f-row-5"></div>
+                    </div>
+                </div>
+                
+                <p class="click-hint">Click to open! 💌</p>
+            </div>
         </div>
-
-        <div class="puzzle-area">
-          <div
-            id="puzzleGrid"
-            class="puzzle-grid"
-            role="group"
-            aria-label="3 by 3 sliding tile puzzle"
-          ></div>
-
-          <div class="preview" aria-label="Image preview">
-            <div class="preview-img" aria-hidden="true"></div>
-            <p class="preview-label">Preview</p>
-          </div>
-        </div>
-
-        <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap2">
-          💬 Reveal-on-tap caption
-        </button>
-        <p id="cap2" class="caption" hidden>
-          Every piece finds its place — just like us.
-        </p>
-      </div>
     </section>
 
-    <!-- SCENE 4: Final question overlay -->
-    <section class="scene" data-scene="4" aria-label="Valentine question scene">
-      <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="questionTitle">
-        <h2 id="questionTitle" class="overlay-title">One last thing…</h2>
-
-        <h3 class="val-title">
-          <span aria-hidden="true">💘</span>
-          <span id="typingText" class="typing" aria-live="polite"></span>
-        </h3>
-
-        <p class="overlay-text">
-          No pressure — just a little courage and a lot of heart.
-        </p>
-
-        <div class="val-actions">
-          <button id="yesBtn" class="btn" type="button">Yes</button>
-          <button id="noBtn" class="btn btn-ghost" type="button">No</button>
+    <!-- Scene 2: Letter (placeholder for next iteration) -->
+    <section class="scene" id="scene-2">
+        <div class="scene-content">
+            <h1>Scene 2: Letter (Coming next!)</h1>
         </div>
-
-        <p id="response" class="response" role="status" aria-live="polite"></p>
-
-        <button class="caption-toggle" type="button" aria-expanded="false" aria-controls="cap3">
-          💬 Reveal-on-tap caption
-        </button>
-        <p id="cap3" class="caption" hidden>
-          If love is a language, you’re my favorite sentence.
-        </p>
-      </div>
     </section>
-  </main>
 
-  <script src="app.js"></script>
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
