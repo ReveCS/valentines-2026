@@ -280,7 +280,7 @@ body {
 }
 
 /* ========================================
-   RESPONSIVE
+   RESPONSIVE — SCENE 1
    ======================================== */
 @media (max-width: 520px) {
     :root { --px: 5.5px; }
@@ -289,4 +289,166 @@ body {
 
 @media (max-width: 380px) {
     :root { --px: 4.5px; }
+}
+
+/* ========================================
+   SCENE 2 — LOVE LETTER
+   ======================================== */
+
+/* Full-screen backdrop — clicking here advances the scene */
+.letter-overlay {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    z-index: 0;
+}
+
+/* Centres the letter + hint vertically */
+.letter-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 680px;
+    padding: 0 1.5rem;
+    max-height: 100vh;
+}
+
+/* ── Paper sheet ─────────────────────────── */
+.letter-paper {
+    position: relative;
+    width: 100%;
+    max-height: 72vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+        linear-gradient(175deg, #fdf6ec 0%, #faf0e4 40%, #f8ead8 100%);
+
+    border: 1px solid #ddc9a8;
+    border-radius: 2px;
+    box-shadow:
+        inset 0 0 40px rgba(210, 170, 120, 0.15),
+        2px 4px 0  rgba(180, 140, 100, 0.18),
+        4px 8px 0  rgba(180, 140, 100, 0.10),
+        0  16px 48px rgba(150, 100, 80, 0.18);
+
+    padding: 3rem 3.5rem 2.5rem;
+    cursor: default;
+}
+
+.letter-paper::-webkit-scrollbar          { width: 6px; }
+.letter-paper::-webkit-scrollbar-track    { background: transparent; }
+.letter-paper::-webkit-scrollbar-thumb    { background: #d4b896; border-radius: 3px; }
+.letter-paper::-webkit-scrollbar-thumb:hover { background: #c4a07a; }
+
+.letter-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d4a07a 20%, #d4a07a 80%, transparent);
+    margin-bottom: 1.8rem;
+    opacity: 0.6;
+}
+.letter-rule--bottom {
+    margin-top: 1.8rem;
+    margin-bottom: 0;
+}
+
+/* ── "Dear Emily," salutation ───────────── */
+.letter-salutation {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(2.8rem, 6vw, 4rem);
+    color: #c0182a;
+    line-height: 1.1;
+    margin-bottom: 1.6rem;
+    letter-spacing: 0.02em;
+    text-shadow:
+        1px 1px 0  rgba(160, 10, 30, 0.2),
+        0   2px 8px rgba(160, 10, 30, 0.12);
+    /* start empty — JS fills this with typewriter */
+    min-height: 1.2em;
+}
+
+.tw-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 0.75em;
+    background: #c0182a;
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: cursor-blink 0.75s step-end infinite;
+}
+
+@keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+/* ── Body paragraphs ────────────────────── */
+.letter-body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.95rem, 2vw, 1.05rem);
+    font-weight: 400;
+    color: #1a1008;
+    line-height: 1.85;
+}
+
+.letter-body p {
+    margin-bottom: 1.2rem;
+    opacity: 0;
+}
+
+.letter-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* ── Closing ────────────────────────────── */
+.letter-closing {
+    margin-top: 1.8rem;
+    font-family: 'Lora', Georgia, serif;
+    text-align: right;
+    opacity: 0;
+}
+
+.closing-line {
+    font-size: 1rem;
+    font-style: italic;
+    color: #3a2010;
+    margin-bottom: 0.3rem;
+}
+
+.closing-signature {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    color: #c0182a;
+    line-height: 1.2;
+    text-shadow:
+        1px 1px 0  rgba(160, 10, 30, 0.2),
+        0   2px 8px rgba(160, 10, 30, 0.1);
+}
+
+/* ── Outside hint ───────────────────────── */
+.outside-hint {
+    margin-top: 1rem;
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.78rem;
+    color: #b08060;
+    opacity: 0;
+    letter-spacing: 0.03em;
+}
+
+/* ========================================
+   RESPONSIVE — SCENE 2
+   ======================================== */
+@media (max-width: 600px) {
+    .letter-paper {
+        padding: 2rem 1.75rem 2rem;
+        max-height: 68vh;
+    }
+    .letter-salutation { font-size: 2.4rem; }
+    .letter-body       { font-size: 0.92rem; }
 }
