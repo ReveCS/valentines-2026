@@ -3,147 +3,122 @@
 // ========================================
 const SceneManager = {
     currentScene: 1,
-    
-    goToScene(sceneNumber) {
-        // Exit current scene
-        const currentSceneEl = document.querySelector(`#scene-${this.currentScene}`);
-        const nextSceneEl = document.querySelector(`#scene-${sceneNumber}`);
-        
-        if (!nextSceneEl) {
-            console.error(`Scene ${sceneNumber} not found`);
-            return;
-        }
-        
-        // Transition out current scene
-        gsap.to(currentSceneEl, {
+
+    goToScene(n) {
+        const from = document.querySelector(`#scene-${this.currentScene}`);
+        const to   = document.querySelector(`#scene-${n}`);
+        if (!to) return;
+
+        gsap.to(from, {
             opacity: 0,
-            duration: 0.6,
-            onComplete: () => {
-                currentSceneEl.classList.remove('is-active');
-            }
+            duration: 0.5,
+            onComplete: () => from.classList.remove('is-active')
         });
-        
-        // Transition in next scene
-        nextSceneEl.classList.add('is-active');
-        gsap.fromTo(nextSceneEl, 
-            { opacity: 0 },
-            { opacity: 1, duration: 0.6, delay: 0.3 }
-        );
-        
-        this.currentScene = sceneNumber;
+
+        to.classList.add('is-active');
+        gsap.fromTo(to, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: 0.3 });
+
+        this.currentScene = n;
     }
 };
 
 // ========================================
-// SCENE 1: ENVELOPE ANIMATION
+// SCENE 1 — ENVELOPE
 // ========================================
 const Scene1 = {
+
     init() {
-        this.envelope = document.getElementById('envelope');
-        this.flap = document.getElementById('flap');
-        this.clickHint = document.querySelector('.click-hint');
-        
-        this.setupClickHandler();
-        this.playEntryAnimation();
+        this.envelope  = document.getElementById('envelope');
+        this.flap      = document.getElementById('flap');
+        this.hint      = document.getElementById('click-hint');
+        this.container = document.getElementById('envelope-container');
+        this.opened    = false;
+
+        this.playEntry();
+        this.container.addEventListener('click', () => this.open());
     },
-    
-    setupClickHandler() {
-        this.envelope.addEventListener('click', () => {
-            this.playOpenAnimation();
-        });
-    },
-    
-    playEntryAnimation() {
-        // Animate envelope and hint entering the scene
-        const tl = gsap.timeline();
-        
-        tl.from(this.envelope, {
+
+    // Envelope pops in on load
+    playEntry() {
+        gsap.from(this.envelope, {
             scale: 0,
-            rotation: -180,
+            rotation: -20,
             opacity: 0,
-            duration: 1,
-            ease: 'back.out(1.7)'
-        })
-        .from(this.clickHint, {
-            opacity: 0,
-            y: 20,
-            duration: 0.6,
-            ease: 'power2.out'
-        }, '-=0.4');
-    },
-    
-    playOpenAnimation() {
-        // Disable further clicks
-        this.envelope.style.pointerEvents = 'none';
-        
-        const tl = gsap.timeline({
-            onComplete: () => {
-                // Transition to next scene after animation
-                this.transitionOut();
-            }
+            duration: 1.1,
+            ease: 'back.out(1.6)',
+            delay: 0.2
         });
-        
-        // 1. Stop bobbing animation
-        tl.set(this.envelope, {
-            animation: 'none'
+        gsap.from(this.hint, {
+            opacity: 0,
+            y: 16,
+            duration: 0.7,
+            delay: 1.1,
+            ease: 'power2.out'
+        });
+    },
+
+    open() {
+        if (this.opened) return;
+        this.opened = true;
+
+        const tl = gsap.timeline();
+
+        // 1. Pause the CSS float animation cleanly
+        tl.call(() => {
+            this.envelope.style.animation = 'none';
         })
-        
-        // 2. Wiggle excitedly
-        .to(this.envelope, {
-            rotation: -5,
-            duration: 0.1,
-            ease: 'power1.inOut'
-        })
-        .to(this.envelope, {
-            rotation: 5,
-            duration: 0.1,
-            ease: 'power1.inOut'
-        })
-        .to(this.envelope, {
-            rotation: -5,
-            duration: 0.1,
-            ease: 'power1.inOut'
-        })
+
+        // 2. Settle to neutral position
         .to(this.envelope, {
             rotation: 0,
-            duration: 0.1,
-            ease: 'power1.inOut'
+            y: 0,
+            duration: 0.25,
+            ease: 'power2.out'
         })
-        
-        // 3. Open the flap
+
+        // 3. Excited wiggle
+        .to(this.envelope, { rotation: -6,  duration: 0.08, ease: 'none' })
+        .to(this.envelope, { rotation:  6,  duration: 0.08, ease: 'none' })
+        .to(this.envelope, { rotation: -4,  duration: 0.07, ease: 'none' })
+        .to(this.envelope, { rotation:  4,  duration: 0.07, ease: 'none' })
+        .to(this.envelope, { rotation:  0,  duration: 0.07, ease: 'none' })
+
+        // 4. Fade hint
+        .to(this.hint, {
+            opacity: 0,
+            y: 8,
+            duration: 0.3,
+            ease: 'power1.in'
+        }, '<')
+
+        // 5. FLAP OPEN:
+        //    The flap is a ▽ triangle anchored at its top-left.
+        //    rotationX: -180 spins it backward around the top edge
+        //    so it folds up and away — like a real envelope opening.
         .to(this.flap, {
-            rotationX: 180,
-            duration: 0.8,
-            ease: 'back.out(1.2)'
-        }, '+=0.2')
-        
-        // 4. Fade out click hint
-        .to(this.clickHint, {
+            rotationX: -180,
+            duration: 0.75,
+            ease: 'back.out(1.3)',
+            transformOrigin: 'top left'
+        }, '+=0.1')
+
+        // 6. Brief pause so the open flap is visible
+        .to({}, { duration: 0.4 })
+
+        // 7. Transition out to Scene 2
+        .to(this.envelope, {
+            scale: 0.85,
+            y: -40,
             opacity: 0,
-            duration: 0.3
-        }, '-=0.6');
-    },
-    
-    transitionOut() {
-        const tl = gsap.timeline({
-            onComplete: () => {
-                SceneManager.goToScene(2);
-            }
-        });
-        
-        // Scale up and fade out the whole envelope
-        tl.to(this.envelope, {
-            scale: 1.5,
-            y: -100,
-            opacity: 0,
-            duration: 0.8,
-            ease: 'power2.in'
+            duration: 0.6,
+            ease: 'power2.in',
+            onComplete: () => SceneManager.goToScene(2)
         });
     }
 };
 
 // ========================================
-// INITIALIZE
+// BOOT
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
     Scene1.init();

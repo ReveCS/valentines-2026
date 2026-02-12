@@ -2,35 +2,41 @@
    CSS VARIABLES & RESET
    ======================================== */
 :root {
-    /* Retro Valentine Palette */
-    --bg-primary: #1a0d1f;
-    --bg-gradient-1: #2d1b3d;
-    --bg-gradient-2: #1a0d1f;
-    
-    /* Envelope colors */
-    --envelope-light: #f5d7d7;
-    --envelope-main: #e8a9a9;
-    --envelope-dark: #d67b7b;
-    --envelope-shadow: #a85555;
-    
-    /* Heart colors */
-    --heart-main: #ff4d6d;
-    --heart-light: #ff6b88;
-    --heart-dark: #c9184a;
-    
-    /* Flap colors */
-    --flap-main: #f5d7d7;
-    --flap-dark: #e8a9a9;
-    
-    /* UI */
-    --text-primary: #ffd4e5;
-    --text-accent: #ff6b88;
-    
-    /* Pixel size */
-    --pixel: 8px;
+    /* Pastel romantic background */
+    --bg-1: #ffe4ef;
+    --bg-2: #fcd5e8;
+    --bg-3: #f9c6e0;
+
+    /* Envelope — warm cream / blush */
+    --env-body:        #fde8d8;
+    --env-border:      #e8a898;
+    --env-shadow:      #d4897a;
+    --env-fold:        #ebbdad;
+
+    /* Flap — peach-pink, slightly different from body */
+    --flap-fill:       #fbd0c4;
+    --flap-border:     #e8a898;
+
+    /* Heart seal */
+    --heart-1:  #f472a8;
+    --heart-2:  #f9a8d4;
+    --heart-3:  #e0417e;
+
+    /* Text */
+    --text-soft:   #c06080;
+    --text-accent: #e8567a;
+
+    /* One "pixel" unit */
+    --px: 8px;
+
+    /* Envelope dimensions in pixel units */
+    --env-w: calc(var(--px) * 40);
+    --env-h: calc(var(--px) * 28);
+    /* Flap is exactly half the envelope height → makes a proper triangle */
+    --flap-h: calc(var(--px) * 14);
 }
 
-* {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -38,385 +44,249 @@
 
 body {
     font-family: 'Press Start 2P', cursive;
-    background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
     min-height: 100vh;
     overflow: hidden;
-    color: var(--text-primary);
+    background:
+        radial-gradient(circle, rgba(255,160,200,0.18) 1px, transparent 1px),
+        linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-size: 20px 20px, 100% 100%;
     image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
 }
 
 /* ========================================
-   SCENE MANAGEMENT
+   SCENE MANAGER
    ======================================== */
 .scene {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    pointer-events: none;
 }
 
 .scene.is-active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 .scene-content {
     text-align: center;
-    position: relative;
-    z-index: 1;
 }
 
 /* ========================================
-   SCENE 1: ENVELOPE
+   ENVELOPE WRAPPER
    ======================================== */
 .envelope-container {
-    position: relative;
     cursor: pointer;
+    user-select: none;
 }
 
 .envelope {
     position: relative;
-    width: calc(var(--pixel) * 40);
-    height: calc(var(--pixel) * 30);
+    width: var(--env-w);
+    height: var(--env-h);
     margin: 0 auto;
-    animation: envelope-bob 2s ease-in-out infinite;
-    transition: transform 0.3s ease;
+    /* 3-D perspective so the flap flip looks real */
+    perspective: 800px;
+    animation: env-float 3s ease-in-out infinite;
 }
 
-.envelope:hover {
-    transform: scale(1.05);
+@keyframes env-float {
+    0%, 100% { transform: translateY(0)    rotate(-1.5deg); }
+    50%       { transform: translateY(-16px) rotate( 1.5deg); }
 }
 
-@keyframes envelope-bob {
-    0%, 100% {
-        transform: translateY(0) rotate(-2deg);
-    }
-    50% {
-        transform: translateY(-20px) rotate(2deg);
-    }
-}
-
-/* Envelope body - pixel art */
+/* ========================================
+   ENVELOPE BODY  (plain rectangle)
+   ======================================== */
 .envelope-body {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: calc(var(--pixel) * 20);
-    z-index: 2;
+    inset: 0;
+    background: var(--env-body);
+    box-shadow:
+        0 0 0 calc(var(--px) * 0.5) var(--env-border),
+        calc(var(--px) * 0.5) calc(var(--px) * 0.75) 0 calc(var(--px) * 0.25) var(--env-shadow),
+        0 8px 32px rgba(232,86,122,0.12);
+    z-index: 1;
+    overflow: hidden;
 }
 
-.pixel-row {
-    height: var(--pixel);
+/* Decorative V-crease lines (like a real envelope) */
+.fold-left {
     position: absolute;
+    top: 50%;
     left: 0;
+    width: 51%;
+    height: calc(var(--px) * 0.5);
+    background: var(--env-fold);
+    transform-origin: right center;
+    transform: rotate(-26deg);
+    opacity: 0.9;
+}
+
+.fold-right {
+    position: absolute;
+    top: 50%;
     right: 0;
+    width: 51%;
+    height: calc(var(--px) * 0.5);
+    background: var(--env-fold);
+    transform-origin: left center;
+    transform: rotate(26deg);
+    opacity: 0.9;
 }
 
-/* Row-by-row pixel art for envelope body */
-.row-1 {
-    top: calc(var(--pixel) * 0);
-    background: linear-gradient(to right, 
-        transparent 0%, transparent 12.5%,
-        var(--envelope-dark) 12.5%, var(--envelope-dark) 87.5%,
-        transparent 87.5%);
-}
-
-.row-2 {
-    top: calc(var(--pixel) * 1);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 7.5%,
-        var(--envelope-dark) 7.5%, var(--envelope-dark) 10%,
-        var(--envelope-main) 10%, var(--envelope-main) 90%,
-        var(--envelope-dark) 90%, var(--envelope-dark) 92.5%,
-        transparent 92.5%);
-}
-
-.row-3 {
-    top: calc(var(--pixel) * 2);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 5%,
-        var(--envelope-dark) 5%, var(--envelope-dark) 7.5%,
-        var(--envelope-light) 7.5%, var(--envelope-light) 12.5%,
-        var(--envelope-main) 12.5%, var(--envelope-main) 87.5%,
-        var(--envelope-light) 87.5%, var(--envelope-light) 92.5%,
-        var(--envelope-dark) 92.5%, var(--envelope-dark) 95%,
-        transparent 95%);
-}
-
-.row-4, .row-5, .row-6, .row-7, .row-8, .row-9 {
-    background: linear-gradient(to right,
-        transparent 0%, transparent 2.5%,
-        var(--envelope-dark) 2.5%, var(--envelope-dark) 5%,
-        var(--envelope-light) 5%, var(--envelope-light) 10%,
-        var(--envelope-main) 10%, var(--envelope-main) 90%,
-        var(--envelope-light) 90%, var(--envelope-light) 95%,
-        var(--envelope-dark) 95%, var(--envelope-dark) 97.5%,
-        transparent 97.5%);
-}
-
-.row-4 { top: calc(var(--pixel) * 3); }
-.row-5 { top: calc(var(--pixel) * 4); }
-.row-6 { top: calc(var(--pixel) * 5); }
-.row-7 { top: calc(var(--pixel) * 6); }
-.row-8 { top: calc(var(--pixel) * 7); }
-.row-9 { top: calc(var(--pixel) * 8); }
-
-.row-10 {
-    top: calc(var(--pixel) * 9);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 2.5%,
-        var(--envelope-shadow) 2.5%, var(--envelope-shadow) 97.5%,
-        transparent 97.5%);
-}
-
-/* Heart seal pixel art */
+/* ========================================
+   PIXEL-ART HEART SEAL
+   Single div, entire heart drawn via box-shadow.
+   Each shadow entry = one pixel cell (--px × --px).
+   ======================================== */
 .heart-seal {
     position: absolute;
-    width: calc(var(--pixel) * 13);
-    height: calc(var(--pixel) * 11);
-    top: calc(var(--pixel) * 10);
-    left: 50%;
-    transform: translateX(-50%);
+    top: calc(50% - calc(var(--px) * 4));
+    left: calc(50% - calc(var(--px) * 5));
     z-index: 3;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    /* one invisible seed pixel; all visible pixels are in box-shadow */
+    width: var(--px);
+    height: var(--px);
 }
 
-.heart-row {
-    height: var(--pixel);
-    position: absolute;
-    left: 0;
-    right: 0;
+.heart-pixel {
+    width: var(--px);
+    height: var(--px);
+    box-shadow:
+        /* Row 0 */
+        calc(var(--px)*2) calc(var(--px)*0) 0 0 var(--heart-3),
+        calc(var(--px)*3) calc(var(--px)*0) 0 0 var(--heart-1),
+        calc(var(--px)*4) calc(var(--px)*0) 0 0 var(--heart-3),
+        calc(var(--px)*6) calc(var(--px)*0) 0 0 var(--heart-3),
+        calc(var(--px)*7) calc(var(--px)*0) 0 0 var(--heart-1),
+        calc(var(--px)*8) calc(var(--px)*0) 0 0 var(--heart-3),
+        /* Row 1 */
+        calc(var(--px)*1) calc(var(--px)*1) 0 0 var(--heart-3),
+        calc(var(--px)*2) calc(var(--px)*1) 0 0 var(--heart-2),
+        calc(var(--px)*3) calc(var(--px)*1) 0 0 var(--heart-2),
+        calc(var(--px)*4) calc(var(--px)*1) 0 0 var(--heart-1),
+        calc(var(--px)*5) calc(var(--px)*1) 0 0 var(--heart-3),
+        calc(var(--px)*6) calc(var(--px)*1) 0 0 var(--heart-1),
+        calc(var(--px)*7) calc(var(--px)*1) 0 0 var(--heart-2),
+        calc(var(--px)*8) calc(var(--px)*1) 0 0 var(--heart-2),
+        calc(var(--px)*9) calc(var(--px)*1) 0 0 var(--heart-3),
+        /* Row 2 */
+        calc(var(--px)*1) calc(var(--px)*2) 0 0 var(--heart-3),
+        calc(var(--px)*2) calc(var(--px)*2) 0 0 var(--heart-2),
+        calc(var(--px)*3) calc(var(--px)*2) 0 0 var(--heart-1),
+        calc(var(--px)*4) calc(var(--px)*2) 0 0 var(--heart-1),
+        calc(var(--px)*5) calc(var(--px)*2) 0 0 var(--heart-1),
+        calc(var(--px)*6) calc(var(--px)*2) 0 0 var(--heart-1),
+        calc(var(--px)*7) calc(var(--px)*2) 0 0 var(--heart-1),
+        calc(var(--px)*8) calc(var(--px)*2) 0 0 var(--heart-2),
+        calc(var(--px)*9) calc(var(--px)*2) 0 0 var(--heart-3),
+        /* Row 3 */
+        calc(var(--px)*1) calc(var(--px)*3) 0 0 var(--heart-3),
+        calc(var(--px)*2) calc(var(--px)*3) 0 0 var(--heart-1),
+        calc(var(--px)*3) calc(var(--px)*3) 0 0 var(--heart-1),
+        calc(var(--px)*4) calc(var(--px)*3) 0 0 var(--heart-1),
+        calc(var(--px)*5) calc(var(--px)*3) 0 0 var(--heart-1),
+        calc(var(--px)*6) calc(var(--px)*3) 0 0 var(--heart-1),
+        calc(var(--px)*7) calc(var(--px)*3) 0 0 var(--heart-1),
+        calc(var(--px)*8) calc(var(--px)*3) 0 0 var(--heart-1),
+        calc(var(--px)*9) calc(var(--px)*3) 0 0 var(--heart-3),
+        /* Row 4 */
+        calc(var(--px)*2) calc(var(--px)*4) 0 0 var(--heart-3),
+        calc(var(--px)*3) calc(var(--px)*4) 0 0 var(--heart-1),
+        calc(var(--px)*4) calc(var(--px)*4) 0 0 var(--heart-1),
+        calc(var(--px)*5) calc(var(--px)*4) 0 0 var(--heart-1),
+        calc(var(--px)*6) calc(var(--px)*4) 0 0 var(--heart-1),
+        calc(var(--px)*7) calc(var(--px)*4) 0 0 var(--heart-1),
+        calc(var(--px)*8) calc(var(--px)*4) 0 0 var(--heart-3),
+        /* Row 5 */
+        calc(var(--px)*3) calc(var(--px)*5) 0 0 var(--heart-3),
+        calc(var(--px)*4) calc(var(--px)*5) 0 0 var(--heart-1),
+        calc(var(--px)*5) calc(var(--px)*5) 0 0 var(--heart-1),
+        calc(var(--px)*6) calc(var(--px)*5) 0 0 var(--heart-1),
+        calc(var(--px)*7) calc(var(--px)*5) 0 0 var(--heart-3),
+        /* Row 6 */
+        calc(var(--px)*4) calc(var(--px)*6) 0 0 var(--heart-3),
+        calc(var(--px)*5) calc(var(--px)*6) 0 0 var(--heart-1),
+        calc(var(--px)*6) calc(var(--px)*6) 0 0 var(--heart-3),
+        /* Row 7 — tip */
+        calc(var(--px)*5) calc(var(--px)*7) 0 0 var(--heart-3);
+
+    filter: drop-shadow(0 2px 6px rgba(224,65,126,0.4));
 }
 
-.h-row-1 {
-    top: calc(var(--pixel) * 0);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 23%,
-        var(--heart-dark) 23%, var(--heart-dark) 38.5%,
-        transparent 38.5%, transparent 61.5%,
-        var(--heart-dark) 61.5%, var(--heart-dark) 77%,
-        transparent 77%);
-}
+/* ========================================
+   ENVELOPE FLAP
 
-.h-row-2 {
-    top: calc(var(--pixel) * 1);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 15.5%,
-        var(--heart-dark) 15.5%, var(--heart-dark) 23%,
-        var(--heart-light) 23%, var(--heart-light) 38.5%,
-        var(--heart-dark) 38.5%, var(--heart-dark) 46%,
-        transparent 46%, transparent 54%,
-        var(--heart-dark) 54%, var(--heart-dark) 61.5%,
-        var(--heart-light) 61.5%, var(--heart-light) 77%,
-        var(--heart-dark) 77%, var(--heart-dark) 84.5%,
-        transparent 84.5%);
-}
+   RESTING STATE: downward-pointing triangle ▽
+   → The CSS border trick creates this naturally:
+       border-left  (transparent) + border-right (transparent) + border-top (colored)
+       = a triangle pointing DOWN
 
-.h-row-3 {
-    top: calc(var(--pixel) * 2);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 8%,
-        var(--heart-dark) 8%, var(--heart-dark) 15.5%,
-        var(--heart-light) 15.5%, var(--heart-light) 46%,
-        var(--heart-main) 46%, var(--heart-main) 54%,
-        var(--heart-light) 54%, var(--heart-light) 84.5%,
-        var(--heart-dark) 84.5%, var(--heart-dark) 92%,
-        transparent 92%);
-}
+   OPEN STATE (after click): GSAP animates rotationX: -180
+   → The flap rotates around its TOP edge (transform-origin: top left),
+     flipping backward like a real envelope flap opening upward.
 
-.h-row-4 {
-    top: calc(var(--pixel) * 3);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 8%,
-        var(--heart-dark) 8%, var(--heart-dark) 15.5%,
-        var(--heart-light) 15.5%, var(--heart-light) 23%,
-        var(--heart-main) 23%, var(--heart-main) 77%,
-        var(--heart-light) 77%, var(--heart-light) 84.5%,
-        var(--heart-dark) 84.5%, var(--heart-dark) 92%,
-        transparent 92%);
-}
-
-.h-row-5 {
-    top: calc(var(--pixel) * 4);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 15.5%,
-        var(--heart-dark) 15.5%, var(--heart-dark) 23%,
-        var(--heart-main) 23%, var(--heart-main) 77%,
-        var(--heart-dark) 77%, var(--heart-dark) 84.5%,
-        transparent 84.5%);
-}
-
-.h-row-5::after,
-.h-row-4::after,
-.h-row-3::after,
-.h-row-2::after,
-.h-row-1::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 100%;
-}
-
-/* Continue heart rows */
-.heart-row:nth-child(6) {
-    top: calc(var(--pixel) * 5);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 23%,
-        var(--heart-dark) 23%, var(--heart-dark) 30.5%,
-        var(--heart-main) 30.5%, var(--heart-main) 69.5%,
-        var(--heart-dark) 69.5%, var(--heart-dark) 77%,
-        transparent 77%);
-}
-
-.heart-row:nth-child(7) {
-    top: calc(var(--pixel) * 6);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 30.5%,
-        var(--heart-dark) 30.5%, var(--heart-dark) 38%,
-        var(--heart-main) 38%, var(--heart-main) 62%,
-        var(--heart-dark) 62%, var(--heart-dark) 69.5%,
-        transparent 69.5%);
-}
-
-.heart-row:nth-child(8) {
-    top: calc(var(--pixel) * 7);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 38%,
-        var(--heart-dark) 38%, var(--heart-dark) 46%,
-        var(--heart-main) 46%, var(--heart-main) 54%,
-        var(--heart-dark) 54%, var(--heart-dark) 62%,
-        transparent 62%);
-}
-
-.heart-row:nth-child(9) {
-    top: calc(var(--pixel) * 8);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 46%,
-        var(--heart-dark) 46%, var(--heart-dark) 54%,
-        transparent 54%);
-}
-
-/* Envelope flap */
+   Key: transform-origin MUST be "top left" because the CSS triangle
+   element has zero width — its visual mass is entirely in the border-top,
+   so "top center" would be wrong.
+   ======================================== */
 .envelope-flap {
     position: absolute;
-    top: calc(var(--pixel) * 10);
+    top: 0;
     left: 0;
-    width: 100%;
-    height: calc(var(--pixel) * 10);
-    transform-origin: top center;
-    z-index: 4;
-    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 2;
+
+    /* Draw downward triangle ▽ */
+    width: 0;
+    height: 0;
+    border-left:  calc(var(--env-w) / 2) solid transparent;
+    border-right: calc(var(--env-w) / 2) solid transparent;
+    border-top:   var(--flap-h) solid var(--flap-fill);
+
+    /* Anchor the flip at the top edge */
+    transform-origin: top left;
+
+    /* Drop shadow on the coloured triangle edge */
+    filter:
+        drop-shadow(0 calc(var(--px)*0.5) 0 var(--flap-border))
+        drop-shadow(0 4px 12px rgba(200,100,130,0.18));
+
+    /* GSAP handles the actual transform */
 }
 
-.envelope-flap.open {
-    transform: rotateX(180deg);
-}
-
-.flap-row {
-    height: var(--pixel);
-    position: absolute;
-    left: 0;
-    right: 0;
-}
-
-.f-row-1 {
-    top: calc(var(--pixel) * 0);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 47.5%,
-        var(--flap-dark) 47.5%, var(--flap-dark) 52.5%,
-        transparent 52.5%);
-}
-
-.f-row-2 {
-    top: calc(var(--pixel) * 1);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 40%,
-        var(--flap-dark) 40%, var(--flap-dark) 47.5%,
-        var(--flap-main) 47.5%, var(--flap-main) 52.5%,
-        var(--flap-dark) 52.5%, var(--flap-dark) 60%,
-        transparent 60%);
-}
-
-.f-row-3 {
-    top: calc(var(--pixel) * 2);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 32.5%,
-        var(--flap-dark) 32.5%, var(--flap-dark) 40%,
-        var(--flap-main) 40%, var(--flap-main) 60%,
-        var(--flap-dark) 60%, var(--flap-dark) 67.5%,
-        transparent 67.5%);
-}
-
-.f-row-4 {
-    top: calc(var(--pixel) * 3);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 25%,
-        var(--flap-dark) 25%, var(--flap-dark) 32.5%,
-        var(--flap-main) 32.5%, var(--flap-main) 67.5%,
-        var(--flap-dark) 67.5%, var(--flap-dark) 75%,
-        transparent 75%);
-}
-
-.f-row-5 {
-    top: calc(var(--pixel) * 4);
-    background: linear-gradient(to right,
-        transparent 0%, transparent 17.5%,
-        var(--flap-dark) 17.5%, var(--flap-dark) 25%,
-        var(--flap-main) 25%, var(--flap-main) 75%,
-        var(--flap-dark) 75%, var(--flap-dark) 82.5%,
-        transparent 82.5%);
-}
-
-/* Click hint */
+/* ========================================
+   CLICK HINT
+   ======================================== */
 .click-hint {
-    margin-top: 3rem;
-    font-size: 0.875rem;
+    display: block;
+    margin-top: 2.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
     color: var(--text-accent);
-    animation: hint-pulse 2s ease-in-out infinite;
-    text-shadow: 0 0 10px var(--heart-light);
+    text-shadow: 0 0 12px rgba(232,86,122,0.35);
+    animation: hint-float 2.2s ease-in-out infinite;
 }
 
-@keyframes hint-pulse {
-    0%, 100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    50% {
-        opacity: 0.6;
-        transform: translateY(-5px);
-    }
+@keyframes hint-float {
+    0%, 100% { opacity: 1;   transform: translateY(0);   }
+    50%       { opacity: 0.5; transform: translateY(-6px); }
 }
 
 /* ========================================
    RESPONSIVE
    ======================================== */
-@media (max-width: 768px) {
-    :root {
-        --pixel: 6px;
-    }
-    
-    .click-hint {
-        font-size: 0.75rem;
-    }
+@media (max-width: 520px) {
+    :root { --px: 5.5px; }
+    .click-hint { font-size: 0.6rem; }
 }
 
-@media (max-width: 480px) {
-    :root {
-        --pixel: 5px;
-    }
-    
-    .click-hint {
-        font-size: 0.65rem;
-    }
+@media (max-width: 380px) {
+    :root { --px: 4.5px; }
 }

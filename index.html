@@ -13,54 +13,46 @@
     <!-- Scene 1: 8-bit Envelope -->
     <section class="scene is-active" id="scene-1">
         <div class="scene-content">
-            <div class="envelope-container">
+            <div class="envelope-container" id="envelope-container">
+
                 <div class="envelope" id="envelope">
-                    <!-- Envelope body -->
+
+                    <!--
+                        FLAP: overlays the top half of the envelope body.
+                        Resting state  → triangle points DOWN (▽) — sealed
+                        After click    → rotateX(180deg) around its TOP edge
+                                         so it flips "open" upward, revealing △
+                    -->
+                    <div class="envelope-flap" id="flap"></div>
+
+                    <!-- BODY: clean rectangle -->
                     <div class="envelope-body">
-                        <div class="pixel-row row-1"></div>
-                        <div class="pixel-row row-2"></div>
-                        <div class="pixel-row row-3"></div>
-                        <div class="pixel-row row-4"></div>
-                        <div class="pixel-row row-5"></div>
-                        <div class="pixel-row row-6"></div>
-                        <div class="pixel-row row-7"></div>
-                        <div class="pixel-row row-8"></div>
-                        <div class="pixel-row row-9"></div>
-                        <div class="pixel-row row-10"></div>
+                        <!-- Decorative V-crease lines -->
+                        <div class="fold-left"></div>
+                        <div class="fold-right"></div>
+
+                        <!-- Pixel-art heart seal sitting on the crease -->
+                        <div class="heart-seal" id="heart-seal">
+                            <div class="heart-pixel"></div>
+                        </div>
                     </div>
-                    
-                    <!-- Heart seal on envelope -->
-                    <div class="heart-seal">
-                        <div class="heart-row h-row-1"></div>
-                        <div class="heart-row h-row-2"></div>
-                        <div class="heart-row h-row-3"></div>
-                        <div class="heart-row h-row-4"></div>
-                        <div class="heart-row h-row-5"></div>
-                    </div>
-                    
-                    <!-- Flap (separate so it can animate) -->
-                    <div class="envelope-flap" id="flap">
-                        <div class="flap-row f-row-1"></div>
-                        <div class="flap-row f-row-2"></div>
-                        <div class="flap-row f-row-3"></div>
-                        <div class="flap-row f-row-4"></div>
-                        <div class="flap-row f-row-5"></div>
-                    </div>
+
                 </div>
-                
-                <p class="click-hint">Click to open! 💌</p>
+
+                <p class="click-hint" id="click-hint">click to open 💌</p>
             </div>
         </div>
     </section>
 
-    <!-- Scene 2: Letter (placeholder for next iteration) -->
+    <!-- Scene 2: placeholder -->
     <section class="scene" id="scene-2">
         <div class="scene-content">
-            <h1>Scene 2: Letter (Coming next!)</h1>
+            <h1 style="font-family:'Press Start 2P',cursive; color:#c06080; font-size:1rem;">
+                Scene 2 coming soon! 💌
+            </h1>
         </div>
     </section>
 
-    <!-- GSAP Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="app.js"></script>
 </body>
