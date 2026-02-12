@@ -452,3 +452,261 @@ body {
     .letter-salutation { font-size: 2.4rem; }
     .letter-body       { font-size: 0.92rem; }
 }
+
+/* ========================================
+   SCENE 3 — WILL YOU BE MY VALENTINE?
+   ======================================== */
+
+/* ── Flower field ───────────────────────── */
+#scene-3 {
+    overflow: hidden;
+}
+
+.flower-field {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Each flower is a .flower div injected by JS.
+   It contains: .stem, .leaf-l, .leaf-r, .bloom
+   The bloom holds pixel petals via box-shadow on .bloom-seed */
+.flower {
+    position: absolute;
+    bottom: 0;
+    transform-origin: bottom center;
+    /* scale starts at 0, GSAP grows it up */
+}
+
+/* Stem */
+.flower .stem {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(var(--px) * 1);
+    background: #7ec87e;
+    box-shadow: 0 0 0 calc(var(--px)*0.25) #5aaa5a;
+    transform-origin: bottom center;
+    /* height set by JS per flower */
+}
+
+/* Leaves */
+.flower .leaf {
+    position: absolute;
+    width: 0;
+    height: 0;
+    /* leaf triangles pointing outward, positioned mid-stem by JS */
+}
+.flower .leaf-l {
+    border-top:    calc(var(--px)*1.5) solid transparent;
+    border-bottom: calc(var(--px)*1.5) solid transparent;
+    border-right:  calc(var(--px)*3)   solid #6abf6a;
+    right: calc(50% + calc(var(--px)*0.5));
+}
+.flower .leaf-r {
+    border-top:    calc(var(--px)*1.5) solid transparent;
+    border-bottom: calc(var(--px)*1.5) solid transparent;
+    border-left:   calc(var(--px)*3)   solid #6abf6a;
+    left: calc(50% + calc(var(--px)*0.5));
+}
+
+/* Bloom — centred above the stem top.
+   The actual petals are box-shadow pixels on .bloom-seed */
+.flower .bloom {
+    position: absolute;
+    /* centred horizontally over stem; top set by JS */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.flower .bloom-seed {
+    width:  var(--px);
+    height: var(--px);
+    /* offset so the grid centre sits over the stem */
+    position: relative;
+    left: calc(var(--px) * -3);
+    top:  calc(var(--px) * -3);
+}
+
+/* ── Valentine card ─────────────────────── */
+.valentine-card {
+    position: relative;
+    z-index: 2;
+
+    background: linear-gradient(160deg, #fff5f8 0%, #ffe8f0 100%);
+    border: calc(var(--px)*0.5) solid #f4a0bc;
+    border-radius: calc(var(--px)*1);
+    box-shadow:
+        calc(var(--px)*0.5) calc(var(--px)*0.5) 0 calc(var(--px)*0.25) #e07898,
+        0 16px 48px rgba(220, 80, 120, 0.18),
+        inset 0 0 32px rgba(255, 200, 220, 0.25);
+
+    padding: 2.5rem 3rem 2rem;
+    text-align: center;
+    min-width: 320px;
+    max-width: 420px;
+    width: 90vw;
+
+    /* starts invisible; GSAP pops it in */
+    opacity: 0;
+    transform: scale(0.7);
+}
+
+/* "Will you be my" */
+.vc-question {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    color: #c0182a;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+    text-shadow: 1px 1px 0 rgba(160,10,30,0.15);
+}
+
+/* "Valentine?" */
+.vc-valentine {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    color: #c0182a;
+    line-height: 1.1;
+    margin-top: 0.4rem;
+    margin-bottom: 1.6rem;
+    text-shadow: 1px 1px 0 rgba(160,10,30,0.15);
+}
+
+/* Pixel heart in the card — bigger than the seal */
+.vc-heart-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0.6rem 0 0.2rem;
+    /* allocate space: heart grid is 11 × 9 px units */
+    height: calc(var(--px) * 10);
+}
+
+.vc-heart-seed {
+    width:  var(--px);
+    height: var(--px);
+    position: relative;
+    /* shift so visual centre aligns */
+    left: calc(var(--px) * -4.5);
+    top:  calc(var(--px) * 0.5);
+    box-shadow:
+        /* Row 0 */
+        calc(var(--px)*2) calc(var(--px)*0) 0 0 #f9a8d4,
+        calc(var(--px)*3) calc(var(--px)*0) 0 0 #f472a8,
+        calc(var(--px)*4) calc(var(--px)*0) 0 0 #e0417e,
+        calc(var(--px)*6) calc(var(--px)*0) 0 0 #e0417e,
+        calc(var(--px)*7) calc(var(--px)*0) 0 0 #f472a8,
+        calc(var(--px)*8) calc(var(--px)*0) 0 0 #f9a8d4,
+        /* Row 1 */
+        calc(var(--px)*1) calc(var(--px)*1) 0 0 #e0417e,
+        calc(var(--px)*2) calc(var(--px)*1) 0 0 #f9a8d4,
+        calc(var(--px)*3) calc(var(--px)*1) 0 0 #f9a8d4,
+        calc(var(--px)*4) calc(var(--px)*1) 0 0 #f472a8,
+        calc(var(--px)*5) calc(var(--px)*1) 0 0 #e0417e,
+        calc(var(--px)*6) calc(var(--px)*1) 0 0 #f472a8,
+        calc(var(--px)*7) calc(var(--px)*1) 0 0 #f9a8d4,
+        calc(var(--px)*8) calc(var(--px)*1) 0 0 #f9a8d4,
+        calc(var(--px)*9) calc(var(--px)*1) 0 0 #e0417e,
+        /* Row 2 */
+        calc(var(--px)*1) calc(var(--px)*2) 0 0 #e0417e,
+        calc(var(--px)*2) calc(var(--px)*2) 0 0 #f9a8d4,
+        calc(var(--px)*3) calc(var(--px)*2) 0 0 #f472a8,
+        calc(var(--px)*4) calc(var(--px)*2) 0 0 #f472a8,
+        calc(var(--px)*5) calc(var(--px)*2) 0 0 #f472a8,
+        calc(var(--px)*6) calc(var(--px)*2) 0 0 #f472a8,
+        calc(var(--px)*7) calc(var(--px)*2) 0 0 #f472a8,
+        calc(var(--px)*8) calc(var(--px)*2) 0 0 #f9a8d4,
+        calc(var(--px)*9) calc(var(--px)*2) 0 0 #e0417e,
+        /* Row 3 */
+        calc(var(--px)*1) calc(var(--px)*3) 0 0 #e0417e,
+        calc(var(--px)*2) calc(var(--px)*3) 0 0 #f472a8,
+        calc(var(--px)*3) calc(var(--px)*3) 0 0 #f472a8,
+        calc(var(--px)*4) calc(var(--px)*3) 0 0 #f472a8,
+        calc(var(--px)*5) calc(var(--px)*3) 0 0 #f472a8,
+        calc(var(--px)*6) calc(var(--px)*3) 0 0 #f472a8,
+        calc(var(--px)*7) calc(var(--px)*3) 0 0 #f472a8,
+        calc(var(--px)*8) calc(var(--px)*3) 0 0 #f472a8,
+        calc(var(--px)*9) calc(var(--px)*3) 0 0 #e0417e,
+        /* Row 4 */
+        calc(var(--px)*2) calc(var(--px)*4) 0 0 #e0417e,
+        calc(var(--px)*3) calc(var(--px)*4) 0 0 #f472a8,
+        calc(var(--px)*4) calc(var(--px)*4) 0 0 #f472a8,
+        calc(var(--px)*5) calc(var(--px)*4) 0 0 #f472a8,
+        calc(var(--px)*6) calc(var(--px)*4) 0 0 #f472a8,
+        calc(var(--px)*7) calc(var(--px)*4) 0 0 #f472a8,
+        calc(var(--px)*8) calc(var(--px)*4) 0 0 #e0417e,
+        /* Row 5 */
+        calc(var(--px)*3) calc(var(--px)*5) 0 0 #e0417e,
+        calc(var(--px)*4) calc(var(--px)*5) 0 0 #f472a8,
+        calc(var(--px)*5) calc(var(--px)*5) 0 0 #f472a8,
+        calc(var(--px)*6) calc(var(--px)*5) 0 0 #f472a8,
+        calc(var(--px)*7) calc(var(--px)*5) 0 0 #e0417e,
+        /* Row 6 */
+        calc(var(--px)*4) calc(var(--px)*6) 0 0 #e0417e,
+        calc(var(--px)*5) calc(var(--px)*6) 0 0 #f472a8,
+        calc(var(--px)*6) calc(var(--px)*6) 0 0 #e0417e,
+        /* Row 7 */
+        calc(var(--px)*5) calc(var(--px)*7) 0 0 #e0417e;
+
+    filter: drop-shadow(0 3px 10px rgba(224,65,126,0.45));
+    animation: heart-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes heart-pulse {
+    0%, 100% { transform: scale(1)    translateX(calc(var(--px) * -4.5)); }
+    50%       { transform: scale(1.12) translateX(calc(var(--px) * -4.5)); }
+}
+
+/* ── Buttons ────────────────────────────── */
+.vc-buttons {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.vc-btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.65rem;
+    padding: 0.75rem 1.4rem;
+    border: calc(var(--px)*0.5) solid transparent;
+    border-radius: calc(var(--px)*0.5);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Yes — bold pink */
+.vc-btn--yes {
+    background: #f472a8;
+    color: #fff;
+    border-color: #e0417e;
+    box-shadow:
+        0 calc(var(--px)*0.5) 0 #c0185e,
+        0 4px 16px rgba(244,114,168,0.4);
+}
+.vc-btn--yes:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow:
+        0 calc(var(--px)*0.75) 0 #c0185e,
+        0 8px 24px rgba(244,114,168,0.5);
+}
+.vc-btn--yes:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 1px 0 #c0185e;
+}
+
+/* No — soft muted; fades on hover */
+.vc-btn--no {
+    background: #f5e0ea;
+    color: #c06080;
+    border-color: #e8b8cc;
+    box-shadow: 0 calc(var(--px)*0.5) 0 #d49aae;
+    /* opacity transition for the hover fade */
+    transition: opacity 0.25s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.vc-btn--no:hover {
+    opacity: 0;
+}

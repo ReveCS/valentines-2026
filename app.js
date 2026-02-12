@@ -221,11 +221,149 @@ const Scene2 = {
 };
 
 // ========================================
+// SCENE 3 — WILL YOU BE MY VALENTINE?
+// ========================================
+const Scene3 = {
+
+    FLOWERS: [
+        { x: 8,  stemH: 110, petal: '#f9a8d4', centre: '#fde68a', size: 'md' },
+        { x: 18, stemH: 80,  petal: '#fca5a5', centre: '#fde68a', size: 'sm' },
+        { x: 28, stemH: 130, petal: '#c4b5fd', centre: '#fde68a', size: 'lg' },
+        { x: 38, stemH: 90,  petal: '#f9a8d4', centre: '#fed7aa', size: 'sm' },
+        { x: 50, stemH: 140, petal: '#fca5a5', centre: '#fde68a', size: 'lg' },
+        { x: 62, stemH: 85,  petal: '#c4b5fd', centre: '#fde68a', size: 'sm' },
+        { x: 72, stemH: 125, petal: '#f9a8d4', centre: '#fde68a', size: 'md' },
+        { x: 82, stemH: 75,  petal: '#fca5a5', centre: '#fed7aa', size: 'sm' },
+        { x: 91, stemH: 115, petal: '#c4b5fd', centre: '#fde68a', size: 'md' },
+        { x: 13, stemH: 60,  petal: '#fde68a', centre: '#f9a8d4', size: 'sm' },
+        { x: 33, stemH: 55,  petal: '#fde68a', centre: '#fca5a5', size: 'sm' },
+        { x: 55, stemH: 65,  petal: '#a5f3fc', centre: '#fde68a', size: 'sm' },
+        { x: 75, stemH: 50,  petal: '#fde68a', centre: '#f9a8d4', size: 'sm' },
+        { x: 95, stemH: 60,  petal: '#a5f3fc', centre: '#fde68a', size: 'sm' },
+    ],
+
+    BLOOM_PX: { sm: 5, md: 7, lg: 9 },
+
+    init() {
+        this.field  = document.getElementById('flower-field');
+        this.card   = document.getElementById('valentine-card');
+        this.btnYes = document.getElementById('btn-yes');
+        this.btnNo  = document.getElementById('btn-no');
+        this._buildFlowers();
+        this._bindButtons();
+    },
+
+    _buildFlowers() {
+        this._flowerEls = [];
+        this.FLOWERS.forEach((cfg) => {
+            const px = this.BLOOM_PX[cfg.size];
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.style.left = `${cfg.x}%`;
+
+            const stem = document.createElement('div');
+            stem.className = 'stem';
+            stem.style.height = `${cfg.stemH}px`;
+
+            const leafL = document.createElement('div');
+            leafL.className = 'leaf leaf-l';
+            leafL.style.bottom = `${cfg.stemH * 0.45}px`;
+
+            const leafR = document.createElement('div');
+            leafR.className = 'leaf leaf-r';
+            leafR.style.bottom = `${cfg.stemH * 0.45}px`;
+
+            const bloom = document.createElement('div');
+            bloom.className = 'bloom';
+            bloom.style.bottom = `${cfg.stemH}px`;
+
+            const seed = document.createElement('div');
+            seed.className = 'bloom-seed';
+            seed.style.width  = `${px}px`;
+            seed.style.height = `${px}px`;
+            seed.style.left   = `${px * -3}px`;
+            seed.style.top    = `${px * -3}px`;
+
+            const P = cfg.petal, C = cfg.centre;
+            const grid = [
+                [0,P,P,0,P,P,0],
+                [P,P,P,P,P,P,P],
+                [P,P,C,C,C,P,P],
+                [0,P,C,C,C,P,0],
+                [P,P,C,C,C,P,P],
+                [P,P,P,P,P,P,P],
+                [0,P,P,0,P,P,0],
+            ];
+
+            const shadows = [];
+            grid.forEach((row, r) => {
+                row.forEach((col, c) => {
+                    if (col) shadows.push(`${c * px}px ${r * px}px 0 0 ${col}`);
+                });
+            });
+            seed.style.boxShadow = shadows.join(', ');
+
+            bloom.appendChild(seed);
+            flower.appendChild(stem);
+            flower.appendChild(leafL);
+            flower.appendChild(leafR);
+            flower.appendChild(bloom);
+            this.field.appendChild(flower);
+
+            gsap.set(flower, { scaleY: 0, scaleX: 0, transformOrigin: 'bottom center' });
+            this._flowerEls.push(flower);
+        });
+    },
+
+    _bindButtons() {
+        this.btnYes.addEventListener('click', () => {
+            gsap.to(this.card, {
+                scale: 0.9, opacity: 0, duration: 0.4, ease: 'power2.in',
+                onComplete: () => SceneManager.goToScene(4)
+            });
+        });
+
+        this.btnNo.addEventListener('mouseenter', () => {
+            gsap.to(this.btnNo, {
+                x: (Math.random() - 0.5) * 20,
+                y: (Math.random() - 0.5) * 10,
+                duration: 0.15, ease: 'power1.out'
+            });
+        });
+        this.btnNo.addEventListener('mouseleave', () => {
+            gsap.to(this.btnNo, { x: 0, y: 0, duration: 0.3, ease: 'elastic.out(1,0.5)' });
+        });
+    },
+
+    enter() {
+        gsap.set(this.card, { opacity: 0, scale: 0.7 });
+        this._flowerEls.forEach(f =>
+            gsap.set(f, { scaleY: 0, scaleX: 0, transformOrigin: 'bottom center' })
+        );
+
+        const tl = gsap.timeline();
+        tl.to(this._flowerEls, {
+            scaleY: 1, scaleX: 1,
+            duration: 0.7,
+            ease: 'back.out(1.4)',
+            stagger: { each: 0.08, from: 'random' }
+        })
+        .to({}, { duration: 0.4 })
+        .to(this.card, {
+            opacity: 1, scale: 1,
+            duration: 0.65,
+            ease: 'back.out(2)',
+        });
+    }
+};
+
+// ========================================
 // BOOT — wire everything up
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
     Scene1.init();
     Scene2.init();
+    Scene3.init();
 });
 
 // Patch SceneManager to call scene enter() hooks
@@ -233,4 +371,5 @@ const _origGoTo = SceneManager.goToScene.bind(SceneManager);
 SceneManager.goToScene = function(n) {
     _origGoTo(n);
     if (n === 2) setTimeout(() => Scene2.enter(), 350);
+    if (n === 3) setTimeout(() => Scene3.enter(), 350);
 };
