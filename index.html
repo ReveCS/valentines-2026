@@ -91,11 +91,11 @@
         </div>
     </section>
 
+    <!-- Persistent flower field — lives outside scenes so it stays across S3→S4 -->
+    <div class="flower-field" id="flower-field"></div>
+
     <!-- Scene 3: Will You Be My Valentine? -->
     <section class="scene" id="scene-3">
-
-        <!-- Flower field — pixel-art blooms injected by JS -->
-        <div class="flower-field" id="flower-field"></div>
 
         <!-- The popup card — hidden until flowers finish -->
         <div class="valentine-card" id="valentine-card">
@@ -111,7 +111,7 @@
                 <img
                     class="vc-photo"
                     id="vc-photo"
-                    src="assets/valentines.png"
+                    src="assets/photo.jpg"
                     alt="Our photo"
                 />
                 <!-- Fallback heart shown if image fails to load -->
@@ -136,6 +136,16 @@
 
             <!-- Scrollable card -->
             <article class="gifts-card" id="gifts-card">
+
+                <!-- Floating decorative hearts -->
+                <div class="gifts-hearts" aria-hidden="true">
+                    <span class="gh gh-1">♥</span>
+                    <span class="gh gh-2">♥</span>
+                    <span class="gh gh-3">♥</span>
+                    <span class="gh gh-4">♥</span>
+                    <span class="gh gh-5">♥</span>
+                    <span class="gh gh-6">♥</span>
+                </div>
 
                 <div class="gifts-rule"></div>
 
@@ -164,8 +174,7 @@
                                 <div class="bow-knot"></div>
                             </div>
                         </div>
-                        <p class="gift-label">Puzzle 🧩</p>
-                    </div>
+                                    </div>
 
                     <!-- Gift 2 -->
                     <div class="gift-portal" id="gift-2" data-scene="6">
@@ -182,8 +191,7 @@
                                 <div class="bow-knot"></div>
                             </div>
                         </div>
-                        <p class="gift-label">Gallery 📸</p>
-                    </div>
+                                    </div>
 
                     <!-- Gift 3 -->
                     <div class="gift-portal" id="gift-3" data-scene="7">
@@ -200,8 +208,7 @@
                                 <div class="bow-knot"></div>
                             </div>
                         </div>
-                        <p class="gift-label">Video 🎬</p>
-                    </div>
+                                    </div>
 
                 </div>
 
@@ -212,11 +219,27 @@
 
     </section>
 
-    <!-- Scenes 5 / 6 / 7: placeholders -->
+    <!-- Scene 5: Sliding Puzzle -->
     <section class="scene" id="scene-5">
-        <div class="scene-content">
-            <h1 style="font-family:'Press Start 2P',cursive;color:#c06080;font-size:1rem;">Scene 5: Puzzle 🧩</h1>
+
+        <div class="puzzle-wrapper" id="puzzle-wrapper">
+
+            <h2 class="puzzle-title" id="puzzle-title">Solve to see the full picture!</h2>
+
+            <!-- The 3×3 grid; tiles injected by JS -->
+            <div class="puzzle-board" id="puzzle-board"></div>
+
+            <!-- Solve overlay — fades in on completion -->
+            <div class="puzzle-solved" id="puzzle-solved">
+                <p class="puzzle-solved-text">We complete each other</p>
+                <div class="puzzle-hearts">
+                    <span>💖</span><span>💖</span><span>💖</span>
+                </div>
+                <button class="puzzle-back-btn" id="puzzle-back-btn">← Back to Gifts</button>
+            </div>
+
         </div>
+
     </section>
     <section class="scene" id="scene-6">
         <div class="scene-content">

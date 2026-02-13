@@ -1040,3 +1040,204 @@ body {
     .gift-body  { height: 64px; }
     .gift-lid   { height: 22px; }
 }
+
+/* ========================================
+   FLOWER FIELD — now position:fixed so it
+   persists underneath Scene 3 AND Scene 4
+   ======================================== */
+.flower-field {
+    position: fixed;   /* was absolute inside scene-3 */
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    /* hidden by default; JS makes it visible when Scene 3 enters */
+    opacity: 0;
+}
+
+/* ========================================
+   SCENE 4 — DECORATIVE HEARTS AROUND TITLE
+   ======================================== */
+.gifts-hearts {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+/* Make the card position:relative so hearts can be absolute inside */
+.gifts-card { position: relative; }
+
+.gh {
+    position: absolute;
+    font-style: normal;
+    color: #f9a8d4;
+    opacity: 0;          /* JS fades in */
+    font-size: 1rem;
+    user-select: none;
+    animation: gh-float 4s ease-in-out infinite;
+}
+
+/* Positions scattered around the card edges */
+.gh-1 { top: 8%;  left:  4%;  font-size: 1.3rem; animation-delay: 0s;    animation-duration: 3.8s; }
+.gh-2 { top: 6%;  right: 5%;  font-size: 0.9rem; animation-delay: 0.6s;  animation-duration: 4.2s; }
+.gh-3 { top: 48%; left:  2%;  font-size: 1.1rem; animation-delay: 1.1s;  animation-duration: 3.5s; }
+.gh-4 { top: 48%; right: 2%;  font-size: 1.1rem; animation-delay: 0.4s;  animation-duration: 4.0s; }
+.gh-5 { bottom: 10%; left:  5%;  font-size: 0.85rem; animation-delay: 1.5s; animation-duration: 3.7s; }
+.gh-6 { bottom: 10%; right: 4%;  font-size: 1.2rem; animation-delay: 0.9s;  animation-duration: 4.3s; }
+
+@keyframes gh-float {
+    0%, 100% { transform: translateY(0)   rotate(-8deg); }
+    50%       { transform: translateY(-8px) rotate( 8deg); }
+}
+
+/* ========================================
+   SCENE 5 — SLIDING PUZZLE
+   ======================================== */
+#scene-5 {
+    background:
+        radial-gradient(circle, rgba(255,160,200,0.18) 1px, transparent 1px),
+        linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-size: 20px 20px, 100% 100%;
+}
+
+.puzzle-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.5rem;
+}
+
+/* Title */
+.puzzle-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: #c0182a;
+    text-shadow: 1px 1px 0 rgba(160,10,30,0.15);
+    text-align: center;
+    opacity: 0; /* JS fades in */
+}
+
+/* ── Board ───────────────────────────────── */
+.puzzle-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows:    repeat(3, 1fr);
+    gap: 3px;
+    background: #e8a898;
+    border: 4px solid #e8a898;
+    border-radius: 8px;
+    box-shadow:
+        0 8px 32px rgba(220,80,120,0.25),
+        inset 0 0 0 1px rgba(255,255,255,0.3);
+
+    /* Size: each tile is square; board fills nicely on desktop + mobile */
+    width:  min(360px, 88vw);
+    height: min(360px, 88vw);
+
+    opacity: 0; /* JS fades in */
+    position: relative;
+}
+
+/* ── Individual tile ────────────────────── */
+.puzzle-tile {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: transform 0.08s ease;
+    /* background-image & background-position set by JS */
+    background-size: 300% 300%; /* 3×3 grid */
+}
+
+.puzzle-tile:hover:not(.puzzle-tile--empty) {
+    transform: scale(0.96);
+    filter: brightness(1.06);
+}
+
+/* Empty tile */
+.puzzle-tile--empty {
+    background: #f9d4c0 !important;
+    cursor: default;
+    border-radius: 3px;
+    box-shadow: inset 0 2px 8px rgba(180,80,80,0.15);
+}
+
+/* ── Solved overlay ─────────────────────── */
+.puzzle-solved {
+    position: absolute;
+    inset: 0;
+    background: rgba(253, 240, 245, 0.94);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+    transition: none; /* GSAP handles this */
+}
+
+.puzzle-solved.is-visible {
+    pointer-events: auto;
+}
+
+.puzzle-solved-text {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(2rem, 6vw, 3rem);
+    color: #c0182a;
+    text-align: center;
+    line-height: 1.2;
+    text-shadow:
+        1px 1px 0  rgba(160,10,30,0.2),
+        0   3px 12px rgba(160,10,30,0.15);
+}
+
+.puzzle-hearts {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.4rem;
+}
+
+.puzzle-hearts span {
+    display: inline-block;
+    animation: heart-pop 0.5s ease backwards;
+}
+.puzzle-hearts span:nth-child(1) { animation-delay: 0.1s; }
+.puzzle-hearts span:nth-child(2) { animation-delay: 0.25s; }
+.puzzle-hearts span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes heart-pop {
+    0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+    70%  { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+
+.puzzle-back-btn {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #c06080;
+    background: none;
+    border: 1px solid #f4a0bc;
+    border-radius: 20px;
+    padding: 0.45rem 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin-top: 0.3rem;
+}
+.puzzle-back-btn:hover {
+    background: #f9a8d4;
+    color: #fff;
+}
+
+/* ========================================
+   RESPONSIVE — SCENE 5
+   ======================================== */
+@media (max-width: 420px) {
+    .puzzle-title { font-size: 1.6rem; }
+}

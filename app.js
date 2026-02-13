@@ -9,6 +9,23 @@ const SceneManager = {
         const to   = document.querySelector(`#scene-${n}`);
         if (!to) return;
 
+        const prev = this.currentScene;
+        this.currentScene = n;
+
+        // Special case: 3 → 4 keeps flowers; only swap the section visibility
+        if (prev === 3 && n === 4) {
+            from.classList.remove('is-active');
+            to.classList.add('is-active');
+            gsap.set(to, { opacity: 1 });
+            return;
+        }
+
+        // Going away FROM scene 4 — fade out flowers too
+        if (prev === 4) {
+            const field = document.getElementById('flower-field');
+            gsap.to(field, { opacity: 0, duration: 0.6 });
+        }
+
         gsap.to(from, {
             opacity: 0,
             duration: 0.5,
@@ -17,8 +34,6 @@ const SceneManager = {
 
         to.classList.add('is-active');
         gsap.fromTo(to, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: 0.3 });
-
-        this.currentScene = n;
     }
 };
 
@@ -320,8 +335,9 @@ const Scene3 = {
 
     _bindButtons() {
         this.btnYes.addEventListener('click', () => {
+            // Fade out ONLY the card — flowers stay visible for scene 4
             gsap.to(this.card, {
-                scale: 0.9, opacity: 0, duration: 0.4, ease: 'power2.in',
+                scale: 0.9, opacity: 0, duration: 0.5, ease: 'power2.in',
                 onComplete: () => SceneManager.goToScene(4)
             });
         });
@@ -438,9 +454,11 @@ const Scene4 = {
     enter() {
         // Reset
         this.titleEl.textContent = '';
+        this.hearts = Array.from(document.querySelectorAll('.gh'));
         gsap.set(this.card,     { opacity: 0, y: 50 });
         gsap.set(this.subtitle, { opacity: 0 });
         gsap.set(this.portals,  { opacity: 0, y: 30 });
+        gsap.set(this.hearts,   { opacity: 0 });
 
         const tl = gsap.timeline();
 
@@ -465,12 +483,194 @@ const Scene4 = {
                             opacity: 1, y: 0,
                             duration: 0.55,
                             stagger: 0.15,
-                            ease: 'back.out(1.6)'
+                            ease: 'back.out(1.6)',
+                            onComplete: () => {
+                                // 5. Decorative hearts drift in
+                                gsap.to(this.hearts, {
+                                    opacity: 0.7,
+                                    duration: 0.8,
+                                    stagger: 0.1,
+                                    ease: 'power2.out'
+                                });
+                            }
                         });
                     }
                 });
             });
         }, null, '+=0.15');
+    }
+};
+
+// ========================================
+// SCENE 5 — SLIDING PUZZLE
+// ========================================
+const Scene5 = {
+    SIZE: 3,
+    // !! Replace with your image path, e.g. 'assets/puzzle.jpg'
+    IMAGE: 'assets/puzzle.png',
+
+    init() {
+        this.board     = document.getElementById('puzzle-board');
+        this.titleEl   = document.getElementById('puzzle-title');
+        this.solvedEl  = document.getElementById('puzzle-solved');
+        this.backBtn   = document.getElementById('puzzle-back-btn');
+        this.tiles     = [];
+        this.state     = [];   // current positions, 0 = empty
+
+        this.backBtn.addEventListener('click', () => {
+            gsap.to(document.getElementById('puzzle-wrapper'), {
+                opacity: 0, y: 20, duration: 0.4, ease: 'power2.in',
+                onComplete: () => SceneManager.goToScene(4)
+            });
+        });
+    },
+
+    enter() {
+        // Reset wrapper visibility
+        gsap.set(document.getElementById('puzzle-wrapper'), { opacity: 1, y: 0 });
+        gsap.set(this.titleEl, { opacity: 0 });
+        gsap.set(this.board,   { opacity: 0 });
+        gsap.set(this.solvedEl, { opacity: 0 });
+        this.solvedEl.classList.remove('is-visible');
+
+        this._buildBoard();
+
+        const tl = gsap.timeline();
+        tl.to(this.titleEl, { opacity: 1, duration: 0.7, ease: 'power2.out' })
+          .to(this.board,   { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.3');
+    },
+
+    _buildBoard() {
+        this.board.innerHTML = '';
+        this.tiles = [];
+
+        const n = this.SIZE;
+        const total = n * n;
+
+        // Build solved state [1,2,3,...,n*n-1, 0]  (0 = empty)
+        const solved = Array.from({ length: total }, (_, i) => (i + 1) % total);
+        this.solved = solved;
+
+        // Shuffle with a solvable sequence (random adjacent swaps from solved)
+        let state = [...solved];
+        let emptyIdx = total - 1;
+
+        // 60 random legal moves to shuffle (easy difficulty)
+        for (let m = 0; m < 60; m++) {
+            const neighbors = this._neighbors(emptyIdx, n);
+            const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
+            [state[emptyIdx], state[pick]] = [state[pick], state[emptyIdx]];
+            emptyIdx = pick;
+        }
+        this.state = state;
+
+        // Render tiles
+        const boardPx = this.board.getBoundingClientRect().width || 360;
+        const tilePx  = boardPx / n;
+
+        state.forEach((val, idx) => {
+            const tile = document.createElement('div');
+            tile.className = 'puzzle-tile' + (val === 0 ? ' puzzle-tile--empty' : '');
+            tile.dataset.idx = idx;
+
+            if (val !== 0) {
+                // val is 1-based solved position
+                const solvedPos = val - 1;
+                const sCol = solvedPos % n;
+                const sRow = Math.floor(solvedPos / n);
+                tile.style.backgroundImage = `url('${this.IMAGE}')`;
+                tile.style.backgroundSize  = `${n * 100}%`;
+                tile.style.backgroundPosition =
+                    `${sCol * (100 / (n - 1))}% ${sRow * (100 / (n - 1))}%`;
+            }
+
+            tile.addEventListener('click', () => this._tryMove(idx));
+            this.board.appendChild(tile);
+            this.tiles.push(tile);
+        });
+    },
+
+    _neighbors(idx, n) {
+        const row = Math.floor(idx / n), col = idx % n;
+        const result = [];
+        if (row > 0)     result.push(idx - n);
+        if (row < n - 1) result.push(idx + n);
+        if (col > 0)     result.push(idx - 1);
+        if (col < n - 1) result.push(idx + 1);
+        return result;
+    },
+
+    _tryMove(clickedIdx) {
+        const emptyIdx = this.state.indexOf(0);
+        const neighbors = this._neighbors(emptyIdx, this.SIZE);
+
+        if (!neighbors.includes(clickedIdx)) return;
+
+        // Swap in state
+        [this.state[emptyIdx], this.state[clickedIdx]] =
+            [this.state[clickedIdx], this.state[emptyIdx]];
+
+        // Animate the clicked tile sliding into the empty spot
+        const boardEl   = this.board;
+        const boardPx   = boardEl.getBoundingClientRect().width;
+        const tilePx    = boardPx / this.SIZE;
+
+        const fromCol = clickedIdx % this.SIZE;
+        const fromRow = Math.floor(clickedIdx / this.SIZE);
+        const toCol   = emptyIdx   % this.SIZE;
+        const toRow   = Math.floor(emptyIdx   / this.SIZE);
+
+        const dx = (toCol - fromCol) * tilePx;
+        const dy = (toRow - fromRow) * tilePx;
+
+        const movingTile  = this.tiles[clickedIdx];
+        const emptyTile   = this.tiles[emptyIdx];
+
+        gsap.to(movingTile, {
+            x: dx, y: dy,
+            duration: 0.18,
+            ease: 'power2.out',
+            onComplete: () => {
+                // Re-render board cleanly (reset transforms)
+                gsap.set(movingTile, { x: 0, y: 0 });
+                this._rebuildTileStyles();
+                if (this._isSolved()) this._showSolved();
+            }
+        });
+    },
+
+    _rebuildTileStyles() {
+        const n = this.SIZE;
+        this.tiles.forEach((tile, idx) => {
+            const val = this.state[idx];
+            if (val === 0) {
+                tile.className = 'puzzle-tile puzzle-tile--empty';
+                tile.style.backgroundImage = '';
+            } else {
+                tile.className = 'puzzle-tile';
+                const solvedPos = val - 1;
+                const sCol = solvedPos % n;
+                const sRow = Math.floor(solvedPos / n);
+                tile.style.backgroundImage = `url('${this.IMAGE}')`;
+                tile.style.backgroundSize  = `${n * 100}%`;
+                tile.style.backgroundPosition =
+                    `${sCol * (100 / (n - 1))}% ${sRow * (100 / (n - 1))}%`;
+            }
+        });
+    },
+
+    _isSolved() {
+        return this.state.every((val, idx) => val === this.solved[idx]);
+    },
+
+    _showSolved() {
+        this.solvedEl.classList.add('is-visible');
+        gsap.to(this.solvedEl, {
+            opacity: 1,
+            duration: 1.2,
+            ease: 'power2.out',
+            delay: 0.3
+        });
     }
 };
 
@@ -483,6 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Scene2.init();
     Scene3.init();
     Scene4.init();
+    Scene5.init();
 
     // Photo fallback: if image fails to load, show emoji heart instead
     const photo = document.getElementById('vc-photo');
@@ -500,4 +701,5 @@ SceneManager.goToScene = function(n) {
     if (n === 2) setTimeout(() => Scene2.enter(), 350);
     if (n === 3) setTimeout(() => Scene3.enter(), 350);
     if (n === 4) setTimeout(() => Scene4.enter(), 350);
+    if (n === 5) setTimeout(() => Scene5.enter(), 350);
 };
