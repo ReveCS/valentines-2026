@@ -102,9 +102,20 @@
 
             <p class="vc-question">Will you be my</p>
 
-            <!-- Pixel heart — same box-shadow technique as Scene 1 -->
-            <div class="vc-heart-wrap">
-                <div class="vc-heart-seed"></div>
+            <!--
+                PHOTO SLOT — replace src with your image path, e.g.:
+                src="assets/us.jpg"
+                The image is cropped to a rounded rectangle via CSS.
+            -->
+            <div class="vc-photo-wrap">
+                <img
+                    class="vc-photo"
+                    id="vc-photo"
+                    src="assets/valentines.png"
+                    alt="Our photo"
+                />
+                <!-- Fallback heart shown if image fails to load -->
+                <div class="vc-photo-fallback" id="vc-photo-fallback">💖</div>
             </div>
 
             <p class="vc-valentine">Valentine?</p>
@@ -118,14 +129,121 @@
 
     </section>
 
-    <!-- Scene 4: placeholder -->
+    <!-- Scene 4: Surprise Gifts -->
     <section class="scene" id="scene-4">
+
+        <div class="gifts-wrapper" id="gifts-wrapper">
+
+            <!-- Scrollable card -->
+            <article class="gifts-card" id="gifts-card">
+
+                <div class="gifts-rule"></div>
+
+                <!-- Title — typewritten by JS -->
+                <h1 class="gifts-title" id="gifts-title"></h1>
+
+                <p class="gifts-subtitle" id="gifts-subtitle">
+                    Three little surprises, just for you 🎀
+                </p>
+
+                <!-- Three gift box portals -->
+                <div class="gifts-grid" id="gifts-grid">
+
+                    <!-- Gift 1 -->
+                    <div class="gift-portal" id="gift-1" data-scene="5">
+                        <div class="gift-box gift-box--pink">
+                            <div class="gift-lid">
+                                <div class="gift-lid-ribbon"></div>
+                            </div>
+                            <div class="gift-body">
+                                <div class="gift-body-ribbon"></div>
+                            </div>
+                            <div class="gift-bow">
+                                <div class="bow-left"></div>
+                                <div class="bow-right"></div>
+                                <div class="bow-knot"></div>
+                            </div>
+                        </div>
+                        <p class="gift-label">Puzzle 🧩</p>
+                    </div>
+
+                    <!-- Gift 2 -->
+                    <div class="gift-portal" id="gift-2" data-scene="6">
+                        <div class="gift-box gift-box--lavender">
+                            <div class="gift-lid">
+                                <div class="gift-lid-ribbon"></div>
+                            </div>
+                            <div class="gift-body">
+                                <div class="gift-body-ribbon"></div>
+                            </div>
+                            <div class="gift-bow">
+                                <div class="bow-left"></div>
+                                <div class="bow-right"></div>
+                                <div class="bow-knot"></div>
+                            </div>
+                        </div>
+                        <p class="gift-label">Gallery 📸</p>
+                    </div>
+
+                    <!-- Gift 3 -->
+                    <div class="gift-portal" id="gift-3" data-scene="7">
+                        <div class="gift-box gift-box--mint">
+                            <div class="gift-lid">
+                                <div class="gift-lid-ribbon"></div>
+                            </div>
+                            <div class="gift-body">
+                                <div class="gift-body-ribbon"></div>
+                            </div>
+                            <div class="gift-bow">
+                                <div class="bow-left"></div>
+                                <div class="bow-right"></div>
+                                <div class="bow-knot"></div>
+                            </div>
+                        </div>
+                        <p class="gift-label">Video 🎬</p>
+                    </div>
+
+                </div>
+
+                <div class="gifts-rule gifts-rule--bottom"></div>
+
+            </article>
+        </div>
+
+    </section>
+
+    <!-- Scenes 5 / 6 / 7: placeholders -->
+    <section class="scene" id="scene-5">
         <div class="scene-content">
-            <h1 style="font-family:'Press Start 2P',cursive; color:#c06080; font-size:1rem;">
-                Scene 4 coming soon! 🎁
-            </h1>
+            <h1 style="font-family:'Press Start 2P',cursive;color:#c06080;font-size:1rem;">Scene 5: Puzzle 🧩</h1>
         </div>
     </section>
+    <section class="scene" id="scene-6">
+        <div class="scene-content">
+            <h1 style="font-family:'Press Start 2P',cursive;color:#c06080;font-size:1rem;">Scene 6: Gallery 📸</h1>
+        </div>
+    </section>
+    <section class="scene" id="scene-7">
+        <div class="scene-content">
+            <h1 style="font-family:'Press Start 2P',cursive;color:#c06080;font-size:1rem;">Scene 7: Video 🎬</h1>
+        </div>
+    </section>
+
+    <!--
+        BACKGROUND MUSIC
+        Replace src with your audio file path, e.g.: assets/music.mp3
+        Starts muted; JS unmutes after first envelope click.
+        The small toggle button (bottom-right) lets her pause/resume.
+    -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="assets/music.mp3" type="audio/mpeg">
+        <source src="assets/music.ogg" type="audio/ogg">
+    </audio>
+
+    <!-- Music toggle pill — always visible after music starts -->
+    <button class="music-toggle" id="music-toggle" aria-label="Toggle music" hidden>
+        <span class="music-icon" id="music-icon">♪</span>
+    </button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <!-- SplitType for typewriter character splitting -->

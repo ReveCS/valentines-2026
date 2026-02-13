@@ -61,6 +61,9 @@ const Scene1 = {
         if (this.opened) return;
         this.opened = true;
 
+        // Start background music on first user interaction
+        MusicPlayer.start();
+
         const tl = gsap.timeline();
 
         // 1. Pause the CSS float animation cleanly
@@ -358,12 +361,136 @@ const Scene3 = {
 };
 
 // ========================================
+// MUSIC PLAYER
+// ========================================
+const MusicPlayer = {
+    init() {
+        this.audio  = document.getElementById('bg-music');
+        this.toggle = document.getElementById('music-toggle');
+        this.icon   = document.getElementById('music-icon');
+        this.started = false;
+
+        this.toggle.addEventListener('click', () => this.togglePlay());
+
+        // Handle browsers that suspend even after user gesture
+        this.audio.addEventListener('play',  () => this._setPlaying(true));
+        this.audio.addEventListener('pause', () => this._setPlaying(false));
+    },
+
+    start() {
+        if (this.started) return;
+        this.started = true;
+
+        this.audio.volume = 0;
+        this.audio.play().then(() => {
+            // Fade volume in gently
+            this.toggle.hidden = false;
+            gsap.to(this.audio, { volume: 0.55, duration: 2.5, ease: 'power1.inOut' });
+            gsap.from(this.toggle, { opacity: 0, scale: 0.6, duration: 0.5, ease: 'back.out(2)', delay: 0.5 });
+            this._setPlaying(true);
+        }).catch(() => {
+            // Autoplay blocked — show toggle so user can manually start
+            this.toggle.hidden = false;
+        });
+    },
+
+    togglePlay() {
+        if (this.audio.paused) {
+            this.audio.play();
+        } else {
+            this.audio.pause();
+        }
+    },
+
+    _setPlaying(playing) {
+        this.icon.textContent = playing ? '♪' : '♩';
+        this.toggle.classList.toggle('is-playing', playing);
+    }
+};
+
+// ========================================
+// SCENE 4 — SURPRISE GIFTS
+// ========================================
+const Scene4 = {
+    TITLE: 'Surprise Gifts For You',
+
+    init() {
+        this.card     = document.getElementById('gifts-card');
+        this.titleEl  = document.getElementById('gifts-title');
+        this.subtitle = document.getElementById('gifts-subtitle');
+        this.portals  = Array.from(document.querySelectorAll('.gift-portal'));
+
+        this._bindPortals();
+    },
+
+    _bindPortals() {
+        this.portals.forEach(portal => {
+            portal.addEventListener('click', () => {
+                const target = parseInt(portal.dataset.scene, 10);
+                gsap.to(this.card, {
+                    opacity: 0, y: -20, duration: 0.4, ease: 'power2.in',
+                    onComplete: () => SceneManager.goToScene(target)
+                });
+            });
+        });
+    },
+
+    enter() {
+        // Reset
+        this.titleEl.textContent = '';
+        gsap.set(this.card,     { opacity: 0, y: 50 });
+        gsap.set(this.subtitle, { opacity: 0 });
+        gsap.set(this.portals,  { opacity: 0, y: 30 });
+
+        const tl = gsap.timeline();
+
+        // 1. Card slides up
+        tl.to(this.card, {
+            opacity: 1, y: 0,
+            duration: 0.9, ease: 'power3.out'
+        })
+
+        // 2. Typewrite the title
+        .call(() => {
+            // Reuse Scene2's typewriter helper (same speed)
+            Scene2.typewrite(this.TITLE, this.titleEl, 55, () => {
+
+                // 3. Subtitle fades in
+                gsap.to(this.subtitle, {
+                    opacity: 1, duration: 0.6, ease: 'power2.out',
+                    onComplete: () => {
+
+                        // 4. Gift portals stagger in
+                        gsap.to(this.portals, {
+                            opacity: 1, y: 0,
+                            duration: 0.55,
+                            stagger: 0.15,
+                            ease: 'back.out(1.6)'
+                        });
+                    }
+                });
+            });
+        }, null, '+=0.15');
+    }
+};
+
+// ========================================
 // BOOT — wire everything up
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
+    MusicPlayer.init();
     Scene1.init();
     Scene2.init();
     Scene3.init();
+    Scene4.init();
+
+    // Photo fallback: if image fails to load, show emoji heart instead
+    const photo = document.getElementById('vc-photo');
+    if (photo) {
+        photo.addEventListener('error', () => {
+            photo.classList.add('error');
+        });
+    }
 });
 
 // Patch SceneManager to call scene enter() hooks
@@ -372,4 +499,5 @@ SceneManager.goToScene = function(n) {
     _origGoTo(n);
     if (n === 2) setTimeout(() => Scene2.enter(), 350);
     if (n === 3) setTimeout(() => Scene3.enter(), 350);
+    if (n === 4) setTimeout(() => Scene4.enter(), 350);
 };

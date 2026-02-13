@@ -710,3 +710,333 @@ body {
 .vc-btn--no:hover {
     opacity: 0;
 }
+
+/* ========================================
+   SCENE 3 — PHOTO SLOT (replaces pixel heart)
+   ======================================== */
+
+/* Remove old pixel-heart styles that are no longer needed */
+.vc-heart-wrap  { display: none; }
+.vc-heart-seed  { display: none; }
+
+.vc-photo-wrap {
+    position: relative;
+    width: 180px;
+    height: 140px;
+    margin: 0.6rem auto 0.4rem;
+}
+
+.vc-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 3px solid #f4a0bc;
+    box-shadow:
+        0 0 0 2px #fff,
+        0 0 0 4px #f4a0bc,
+        0 8px 24px rgba(220,80,120,0.25);
+    display: block;
+}
+
+/* Fallback emoji if image src is missing/broken */
+.vc-photo-fallback {
+    display: none;
+    font-size: 4rem;
+    line-height: 1;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* Show fallback when image errors */
+.vc-photo.error { display: none; }
+.vc-photo.error ~ .vc-photo-fallback { display: block; }
+
+/* ========================================
+   MUSIC TOGGLE BUTTON
+   ======================================== */
+.music-toggle {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 999;
+
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid #f4a0bc;
+    background: rgba(255,240,248,0.92);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(220,80,120,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.music-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(220,80,120,0.35);
+}
+
+.music-icon {
+    font-size: 1.2rem;
+    color: #c06080;
+    transition: opacity 0.2s;
+    /* spinning note animation while playing */
+    display: inline-block;
+}
+
+.music-toggle.is-playing .music-icon {
+    animation: note-spin 3s linear infinite;
+}
+
+@keyframes note-spin {
+    0%   { transform: rotate(0deg)   scale(1);    }
+    25%  { transform: rotate(8deg)   scale(1.1);  }
+    75%  { transform: rotate(-8deg)  scale(1.1);  }
+    100% { transform: rotate(0deg)   scale(1);    }
+}
+
+/* ========================================
+   SCENE 4 — SURPRISE GIFTS
+   ======================================== */
+#scene-4 {
+    overflow-y: auto;
+    align-items: flex-start;
+    padding: 2rem 0;
+}
+
+.gifts-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 1.5rem;
+    min-height: 100%;
+    align-items: center;
+}
+
+/* Card */
+.gifts-card {
+    background: linear-gradient(175deg, #fdf6ec 0%, #faf0e4 40%, #f8ead8 100%);
+    border: 1px solid #ddc9a8;
+    border-radius: 2px;
+    box-shadow:
+        inset 0 0 40px rgba(210,170,120,0.15),
+        2px 4px 0  rgba(180,140,100,0.18),
+        4px 8px 0  rgba(180,140,100,0.10),
+        0 16px 48px rgba(150,100,80,0.18);
+    padding: 2.5rem 3rem 2.5rem;
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+
+    opacity: 0; /* GSAP animates in */
+}
+
+.gifts-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d4a07a 20%, #d4a07a 80%, transparent);
+    margin-bottom: 1.6rem;
+    opacity: 0.6;
+}
+.gifts-rule--bottom {
+    margin-top: 2rem;
+    margin-bottom: 0;
+}
+
+/* Title */
+.gifts-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+    color: #c0182a;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    text-shadow:
+        1px 1px 0  rgba(160,10,30,0.2),
+        0   2px 8px rgba(160,10,30,0.12);
+    min-height: 1.2em;
+}
+
+/* Subtitle */
+.gifts-subtitle {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #8a6040;
+    margin-bottom: 2.2rem;
+    opacity: 0; /* faded in by JS */
+}
+
+/* Gift grid */
+.gifts-grid {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin: 0 auto;
+}
+
+/* ── Individual gift portal ─────────────── */
+.gift-portal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    opacity: 0; /* stagger in via JS */
+    transition: transform 0.2s ease;
+}
+
+.gift-portal:hover .gift-box {
+    transform: translateY(-6px) scale(1.04);
+}
+
+.gift-portal:hover .gift-label {
+    color: #c0182a;
+}
+
+/* The whole gift box wrapper */
+.gift-box {
+    position: relative;
+    width: 100px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+}
+
+/* ── Lid ──────────────────────────────────
+   Slightly wider + shorter than body.
+   Sits on top via negative margin.           */
+.gift-lid {
+    position: relative;
+    height: 26px;
+    border-radius: 4px 4px 0 0;
+    margin: 0 -4px;  /* overhang on each side */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gift-lid-ribbon {
+    position: absolute;
+    width: 12px;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+/* ── Body ─────────────────────────────────*/
+.gift-body {
+    position: relative;
+    height: 80px;
+    border-radius: 0 0 6px 6px;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.gift-body-ribbon {
+    width: 12px;
+    border-radius: 2px;
+}
+
+/* ── Bow ──────────────────────────────────
+   Two rounded triangles + a centre knot.    */
+.gift-bow {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bow-left,
+.bow-right {
+    width: 18px;
+    height: 14px;
+    border-radius: 50% 50% 0 50%;
+    position: absolute;
+}
+
+.bow-left  { left:  0; transform: rotate(-30deg); }
+.bow-right { right: 0; transform: rotate( 30deg) scaleX(-1); }
+
+.bow-knot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Color themes ─────────────────────── */
+
+/* Pink gift */
+.gift-box--pink .gift-lid   { background: #f9a8d4; }
+.gift-box--pink .gift-body  { background: #fce7f3; border: 2px solid #f9a8d4; }
+.gift-box--pink .gift-lid-ribbon  { background: #e0417e; }
+.gift-box--pink .gift-body-ribbon { background: #e0417e; }
+.gift-box--pink .bow-left,
+.gift-box--pink .bow-right  { background: #f472a8; }
+.gift-box--pink .bow-knot   { background: #e0417e; }
+
+/* Lavender gift */
+.gift-box--lavender .gift-lid   { background: #c4b5fd; }
+.gift-box--lavender .gift-body  { background: #ede9fe; border: 2px solid #c4b5fd; }
+.gift-box--lavender .gift-lid-ribbon  { background: #7c3aed; }
+.gift-box--lavender .gift-body-ribbon { background: #7c3aed; }
+.gift-box--lavender .bow-left,
+.gift-box--lavender .bow-right  { background: #a78bfa; }
+.gift-box--lavender .bow-knot   { background: #7c3aed; }
+
+/* Mint gift */
+.gift-box--mint .gift-lid   { background: #6ee7b7; }
+.gift-box--mint .gift-body  { background: #d1fae5; border: 2px solid #6ee7b7; }
+.gift-box--mint .gift-lid-ribbon  { background: #059669; }
+.gift-box--mint .gift-body-ribbon { background: #059669; }
+.gift-box--mint .bow-left,
+.gift-box--mint .bow-right  { background: #34d399; }
+.gift-box--mint .bow-knot   { background: #059669; }
+
+/* Gift label */
+.gift-label {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: #8a6040;
+    transition: color 0.2s ease;
+}
+
+/* ── Gift box idle bounce animation ─────── */
+@keyframes gift-idle {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50%       { transform: translateY(-5px) rotate(1deg); }
+}
+
+.gift-portal:nth-child(1) .gift-box { animation: gift-idle 2.8s ease-in-out infinite; }
+.gift-portal:nth-child(2) .gift-box { animation: gift-idle 3.1s ease-in-out infinite 0.4s; }
+.gift-portal:nth-child(3) .gift-box { animation: gift-idle 2.6s ease-in-out infinite 0.8s; }
+
+/* Pause idle on hover so the lift feels clean */
+.gift-portal:hover .gift-box {
+    animation-play-state: paused;
+}
+
+/* ========================================
+   RESPONSIVE — SCENE 4
+   ======================================== */
+@media (max-width: 600px) {
+    .gifts-card { padding: 2rem 1.5rem; }
+    .gifts-grid { gap: 1.2rem; }
+    .gift-box   { width: 80px; }
+    .gift-body  { height: 64px; }
+    .gift-lid   { height: 22px; }
+}
