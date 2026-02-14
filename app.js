@@ -689,7 +689,7 @@ const Scene5 = {
 const Scene6 = {
 
     WORDS: [
-        { word: 'MOMO',            hint: 'your new son 🐱' },
+        { word: 'MOMO',            hint: 'our new son 🐱' },
         { word: 'CHINATRIP',       hint: 'your fall extravaganza 🥟' },
         { word: 'INTOTHEWISH',     hint: 'we traveled to asia for this 🌸' },
         { word: 'YOSEMITE',        hint: 'we touched grass 🌲' },
