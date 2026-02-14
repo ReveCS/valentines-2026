@@ -355,6 +355,8 @@ const Scene3 = {
     },
 
     enter() {
+        // Make flower field visible
+        gsap.set(this.field, { opacity: 1 });
         gsap.set(this.card, { opacity: 0, scale: 0.7 });
         this._flowerEls.forEach(f =>
             gsap.set(f, { scaleY: 0, scaleX: 0, transformOrigin: 'bottom center' })
@@ -507,22 +509,25 @@ const Scene4 = {
 const Scene5 = {
     SIZE: 3,
     // !! Replace with your image path, e.g. 'assets/puzzle.jpg'
-    IMAGE: 'assets/puzzle.png',
+    IMAGE: 'assets/puzzle.jpg',
 
     init() {
-        this.board     = document.getElementById('puzzle-board');
-        this.titleEl   = document.getElementById('puzzle-title');
-        this.solvedEl  = document.getElementById('puzzle-solved');
-        this.backBtn   = document.getElementById('puzzle-back-btn');
-        this.tiles     = [];
-        this.state     = [];   // current positions, 0 = empty
+        this.board        = document.getElementById('puzzle-board');
+        this.titleEl      = document.getElementById('puzzle-title');
+        this.solvedEl     = document.getElementById('puzzle-solved');
+        this.backBtn      = document.getElementById('puzzle-back-btn');
+        this.persistBack  = document.getElementById('puzzle-persist-back');
+        this.tiles        = [];
+        this.state        = [];
 
-        this.backBtn.addEventListener('click', () => {
+        const doBack = () => {
             gsap.to(document.getElementById('puzzle-wrapper'), {
                 opacity: 0, y: 20, duration: 0.4, ease: 'power2.in',
                 onComplete: () => SceneManager.goToScene(4)
             });
-        });
+        };
+        this.backBtn.addEventListener('click', doBack);
+        this.persistBack.addEventListener('click', doBack);
     },
 
     enter() {
@@ -531,13 +536,15 @@ const Scene5 = {
         gsap.set(this.titleEl, { opacity: 0 });
         gsap.set(this.board,   { opacity: 0 });
         gsap.set(this.solvedEl, { opacity: 0 });
+        gsap.set(this.persistBack, { opacity: 0 });
         this.solvedEl.classList.remove('is-visible');
 
         this._buildBoard();
 
         const tl = gsap.timeline();
         tl.to(this.titleEl, { opacity: 1, duration: 0.7, ease: 'power2.out' })
-          .to(this.board,   { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.3');
+          .to(this.board,   { opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+          .to(this.persistBack, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.2');
     },
 
     _buildBoard() {
@@ -555,8 +562,9 @@ const Scene5 = {
         let state = [...solved];
         let emptyIdx = total - 1;
 
-        // 60 random legal moves to shuffle (easy difficulty)
-        for (let m = 0; m < 60; m++) {
+        // 3-4 random legal moves from solved (very beginner friendly)
+        const shuffleMoves = 3 + Math.floor(Math.random() * 2); // 3 or 4
+        for (let m = 0; m < shuffleMoves; m++) {
             const neighbors = this._neighbors(emptyIdx, n);
             const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
             [state[emptyIdx], state[pick]] = [state[pick], state[emptyIdx]];
@@ -674,6 +682,267 @@ const Scene5 = {
     }
 };
 
+
+// ========================================
+// SCENE 6 — WORD SEARCH
+// ========================================
+const Scene6 = {
+
+    WORDS: [
+        { word: 'MOMO',            hint: 'your new son 🐱' },
+        { word: 'CHINATRIP',       hint: 'your fall extravaganza 🥟' },
+        { word: 'INTOTHEWISH',     hint: 'we traveled to asia for this 🌸' },
+        { word: 'YOSEMITE',        hint: 'we touched grass 🌲' },
+        { word: 'UNIVERSALSTUDIOS',hint: 'childhood dreams came true 🎢' },
+        { word: 'AQUARIUM',        hint: 'Monterey Bay 🐠' },
+        { word: 'BRONXZOO',        hint: 'animal time!! we witnessed dog abuse though 🐘' },
+        { word: 'GRADUATION',      hint: 'something we both celebrated!! 🎓' },
+    ],
+
+    COLS: 22,
+    ROWS: 18,
+    DIRS: [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]],
+
+    init() {
+        this.gridEl  = document.getElementById('ws-grid');
+        this.bankEl  = document.getElementById('ws-bank');
+        this.backBtn = document.getElementById('ws-back-btn');
+        this.wrapper = document.getElementById('wordsearch-wrapper');
+        this.backBtn.addEventListener('click', () => {
+            gsap.to(this.wrapper, {
+                opacity: 0, y: 20, duration: 0.4, ease: 'power2.in',
+                onComplete: () => SceneManager.goToScene(4)
+            });
+        });
+    },
+
+    enter() {
+        gsap.set(this.wrapper, { opacity: 0, y: 30 });
+        this.foundCount = 0;
+        this.cells      = [];
+        this.grid       = [];
+        this.wordData   = [];
+        this._buildGrid();
+        this._buildBank();
+        this._bindInteraction();
+        gsap.to(this.wrapper, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+    },
+
+    _buildGrid() {
+        const R = this.ROWS, C = this.COLS;
+        this.grid = Array.from({ length: R }, () => Array(C).fill(''));
+        this.wordData = this.WORDS.map((w, wi) => {
+            const placed = this._placeWord(w.word);
+            return { ...w, cells: placed, found: false, idx: wi };
+        });
+        const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let r = 0; r < R; r++)
+            for (let c = 0; c < C; c++)
+                if (!this.grid[r][c])
+                    this.grid[r][c] = alpha[Math.floor(Math.random() * 26)];
+        this.gridEl.innerHTML = '';
+        this.gridEl.style.gridTemplateColumns = `repeat(${C}, 1fr)`;
+        this.cells = [];
+        for (let r = 0; r < R; r++) {
+            for (let c = 0; c < C; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'ws-cell';
+                cell.textContent = this.grid[r][c];
+                cell.dataset.r = r;
+                cell.dataset.c = c;
+                this.gridEl.appendChild(cell);
+                this.cells.push(cell);
+            }
+        }
+    },
+
+    _placeWord(word) {
+        const R = this.ROWS, C = this.COLS;
+        const dirs = [...this.DIRS];
+        for (let i = dirs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
+        }
+        for (let attempt = 0; attempt < 500; attempt++) {
+            const [dr, dc] = dirs[attempt % dirs.length];
+            const sr = Math.floor(Math.random() * R);
+            const sc = Math.floor(Math.random() * C);
+            const cells = [];
+            let fits = true;
+            for (let i = 0; i < word.length; i++) {
+                const nr = sr + dr * i, nc = sc + dc * i;
+                if (nr < 0 || nr >= R || nc < 0 || nc >= C) { fits = false; break; }
+                const ex = this.grid[nr][nc];
+                if (ex && ex !== word[i]) { fits = false; break; }
+                cells.push(nr * C + nc);
+            }
+            if (fits) {
+                for (let i = 0; i < word.length; i++)
+                    this.grid[sr + dr*i][sc + dc*i] = word[i];
+                return cells;
+            }
+        }
+        // Hard fallback: horizontal on a fresh row
+        const row = (this.wordData ? this.wordData.length : 0) % R;
+        const cells = [];
+        for (let i = 0; i < word.length && i < C; i++) {
+            this.grid[row][i] = word[i];
+            cells.push(row * C + i);
+        }
+        return cells;
+    },
+
+    _buildBank() {
+        this.bankEl.innerHTML = '';
+        this.WORDS.forEach((w, i) => {
+            const item = document.createElement('div');
+            item.className = 'ws-word-item';
+            item.id = `ws-item-${i}`;
+
+            const label = document.createElement('span');
+            label.className = 'ws-word-label';
+            label.id = `ws-label-${i}`;
+            label.textContent = w.word[0] + '_ '.repeat(w.word.length - 1).trim();
+
+            const hintBtn = document.createElement('button');
+            hintBtn.className = 'ws-hint-btn';
+            hintBtn.textContent = '? hint';
+
+            const tip = document.createElement('span');
+            tip.className = 'ws-hint-tip';
+            tip.textContent = w.hint;
+            tip.style.opacity = '0';
+
+            hintBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tip.style.opacity = tip.style.opacity === '1' ? '0' : '1';
+            });
+
+            item.append(label, hintBtn, tip);
+            this.bankEl.appendChild(item);
+        });
+    },
+
+    _bindInteraction() {
+        let selecting = false, startFlat = null;
+        const C = this.COLS;
+
+        const flatOf = (el) => {
+            if (!el || !el.classList.contains('ws-cell')) return null;
+            return parseInt(el.dataset.r) * C + parseInt(el.dataset.c);
+        };
+
+        const cellsInLine = (a, b) => {
+            if (a === null || b === null) return [];
+            const r1 = Math.floor(a/C), c1 = a%C;
+            const r2 = Math.floor(b/C), c2 = b%C;
+            const dr = Math.sign(r2-r1), dc = Math.sign(c2-c1);
+            const isDiag  = Math.abs(r2-r1) === Math.abs(c2-c1);
+            const isStraight = r1===r2 || c1===c2;
+            if (!isDiag && !isStraight) return [];
+            const len = Math.max(Math.abs(r2-r1), Math.abs(c2-c1));
+            const out = [];
+            for (let i = 0; i <= len; i++)
+                out.push((r1+dr*i)*C + (c1+dc*i));
+            return out;
+        };
+
+        const clearHighlight = () =>
+            this.cells.forEach(c => c.classList.remove('is-selecting'));
+
+        const doHighlight = (a, b) => {
+            clearHighlight();
+            cellsInLine(a, b).forEach(idx => {
+                if (this.cells[idx]) this.cells[idx].classList.add('is-selecting');
+            });
+        };
+
+        const doSubmit = (a, b) => {
+            clearHighlight();
+            const sel = cellsInLine(a, b);
+            if (!sel.length) return;
+            this.wordData.forEach((wd, wi) => {
+                if (wd.found) return;
+                const rev = [...wd.cells].reverse();
+                const eq  = (arr) => arr.length===sel.length && arr.every((v,i)=>v===sel[i]);
+                if (eq(wd.cells) || eq(rev)) {
+                    wd.found = true;
+                    wd.cells.forEach(idx => {
+                        this.cells[idx].className = `ws-cell is-found-${wi}`;
+                    });
+                    this._revealWord(wi, wd);
+                    this._celebrate(wd.cells);
+                }
+            });
+        };
+
+        // Mouse
+        this.gridEl.addEventListener('mousedown', (e) => {
+            const f = flatOf(e.target); if (f===null) return;
+            selecting=true; startFlat=f; doHighlight(f,f);
+        });
+        this.gridEl.addEventListener('mousemove', (e) => {
+            if (!selecting) return; doHighlight(startFlat, flatOf(e.target));
+        });
+        window.addEventListener('mouseup', (e) => {
+            if (!selecting) return; selecting=false;
+            doSubmit(startFlat, flatOf(e.target)); startFlat=null;
+        });
+
+        // Touch
+        const touchFlat = (e) => {
+            const t = e.touches[0] || e.changedTouches[0];
+            return flatOf(document.elementFromPoint(t.clientX, t.clientY));
+        };
+        this.gridEl.addEventListener('touchstart', (e) => {
+            const f = touchFlat(e); if (f===null) return;
+            e.preventDefault(); selecting=true; startFlat=f; doHighlight(f,f);
+        }, {passive:false});
+        this.gridEl.addEventListener('touchmove', (e) => {
+            if (!selecting) return; e.preventDefault();
+            doHighlight(startFlat, touchFlat(e));
+        }, {passive:false});
+        this.gridEl.addEventListener('touchend', (e) => {
+            if (!selecting) return; selecting=false;
+            doSubmit(startFlat, touchFlat(e)); startFlat=null;
+        });
+    },
+
+    _revealWord(wi, wd) {
+        const item  = document.getElementById(`ws-item-${wi}`);
+        const label = document.getElementById(`ws-label-${wi}`);
+        if (!item||!label) return;
+        gsap.fromTo(item, {scale:1},{
+            scale:1.18, duration:0.15, yoyo:true, repeat:1, ease:'power2.out',
+            onComplete: () => {
+                item.classList.add('is-found');
+                label.textContent = wd.word;
+            }
+        });
+    },
+
+    _celebrate(cells) {
+        const emojis = ['💖','✨','🌸','💕','⭐','🎉','💗','🌟'];
+        const midIdx = cells[Math.floor(cells.length/2)];
+        const rect   = this.cells[midIdx].getBoundingClientRect();
+        const ox = rect.left + rect.width/2, oy = rect.top + rect.height/2;
+        for (let i = 0; i < 8; i++) {
+            const b = document.createElement('div');
+            b.className = 'ws-burst';
+            b.textContent = emojis[i%emojis.length];
+            b.style.left = ox+'px'; b.style.top = oy+'px';
+            document.body.appendChild(b);
+            const angle = (i/8)*Math.PI*2, dist = 55+Math.random()*45;
+            gsap.fromTo(b,
+                {x:0,y:0,opacity:1,scale:0.4},
+                {x:Math.cos(angle)*dist, y:Math.sin(angle)*dist,
+                 opacity:0, scale:1.3, duration:0.85, ease:'power2.out',
+                 onComplete:()=>b.remove()}
+            );
+        }
+    }
+};
+
 // ========================================
 // BOOT — wire everything up
 // ========================================
@@ -684,6 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Scene3.init();
     Scene4.init();
     Scene5.init();
+    Scene6.init();
 
     // Photo fallback: if image fails to load, show emoji heart instead
     const photo = document.getElementById('vc-photo');
@@ -702,4 +972,5 @@ SceneManager.goToScene = function(n) {
     if (n === 3) setTimeout(() => Scene3.enter(), 350);
     if (n === 4) setTimeout(() => Scene4.enter(), 350);
     if (n === 5) setTimeout(() => Scene5.enter(), 350);
+    if (n === 6) setTimeout(() => Scene6.enter(), 350);
 };

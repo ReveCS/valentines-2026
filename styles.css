@@ -458,15 +458,9 @@ body {
    ======================================== */
 
 /* ── Flower field ───────────────────────── */
+/* overflow:hidden removed — it clips the fixed flower-field */
 #scene-3 {
-    overflow: hidden;
-}
-
-.flower-field {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
+    overflow: visible;
 }
 
 /* Each flower is a .flower div injected by JS.
@@ -1046,12 +1040,11 @@ body {
    persists underneath Scene 3 AND Scene 4
    ======================================== */
 .flower-field {
-    position: fixed;   /* was absolute inside scene-3 */
+    position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    /* hidden by default; JS makes it visible when Scene 3 enters */
-    opacity: 0;
+    opacity: 0; /* JS sets to 1 on Scene3.enter(), fades out after Scene4 */
 }
 
 /* ========================================
@@ -1240,4 +1233,230 @@ body {
    ======================================== */
 @media (max-width: 420px) {
     .puzzle-title { font-size: 1.6rem; }
+}
+
+/* ========================================
+   PUZZLE PERSISTENT BACK BUTTON
+   ======================================== */
+.puzzle-persist-back-btn {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: #c06080;
+    background: rgba(255,240,248,0.85);
+    border: 1px solid #f4a0bc;
+    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    backdrop-filter: blur(4px);
+    opacity: 0; /* JS fades in */
+}
+.puzzle-persist-back-btn:hover {
+    background: #f9a8d4;
+    color: #fff;
+}
+
+/* ========================================
+   SCENE 6 — WORD SEARCH
+   ======================================== */
+#scene-6 {
+    background:
+        radial-gradient(circle, rgba(255,160,200,0.18) 1px, transparent 1px),
+        linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-size: 20px 20px, 100% 100%;
+    overflow-y: auto;
+    align-items: flex-start;
+    padding: 1.5rem 0 2rem;
+}
+
+.wordsearch-wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0; /* GSAP fades in */
+}
+
+/* Title */
+.ws-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+    color: #c0182a;
+    text-align: center;
+    text-shadow: 1px 1px 0 rgba(160,10,30,0.15);
+}
+
+/* ── Letter grid ─────────────────────────── */
+.ws-grid {
+    display: grid;
+    /* columns set by JS */
+    gap: 2px;
+    background: #fce7f3;
+    border: 3px solid #f4a0bc;
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 6px 24px rgba(220,80,120,0.18);
+    user-select: none;
+    touch-action: none;
+}
+
+.ws-cell {
+    width:  clamp(22px, 3.5vw, 32px);
+    height: clamp(22px, 3.5vw, 32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(0.45rem, 1.1vw, 0.65rem);
+    color: #3a1020;
+    background: #fff5f8;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+    border: 1px solid transparent;
+}
+
+.ws-cell:hover {
+    background: #fce7f3;
+}
+
+/* While dragging / selected candidate */
+.ws-cell.is-selecting {
+    background: #fbd0e8;
+    color: #c0182a;
+    border-color: #f4a0bc;
+}
+
+/* Permanently found — colour varies by word index */
+.ws-cell.is-found-0  { background: #fca5a5; color: #fff; }
+.ws-cell.is-found-1  { background: #f9a8d4; color: #fff; }
+.ws-cell.is-found-2  { background: #c4b5fd; color: #fff; }
+.ws-cell.is-found-3  { background: #6ee7b7; color: #fff; }
+.ws-cell.is-found-4  { background: #fde68a; color: #7c5c00; }
+.ws-cell.is-found-5  { background: #a5f3fc; color: #0c4a6e; }
+.ws-cell.is-found-6  { background: #fdba74; color: #7c3000; }
+.ws-cell.is-found-7  { background: #d8b4fe; color: #3b0764; }
+
+/* ── Word bank ───────────────────────────── */
+.ws-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+    width: 100%;
+    max-width: 700px;
+}
+
+.ws-word-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,240,248,0.9);
+    border: 1px solid #f4a0bc;
+    border-radius: 20px;
+    padding: 0.3rem 0.7rem 0.3rem 0.6rem;
+    font-family: 'Lora', serif;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.ws-word-item.is-found {
+    background: #fce7f3;
+    border-color: #e0417e;
+}
+
+/* The word label — shows first letter, then full word on found */
+.ws-word-label {
+    font-size: 0.85rem;
+    color: #3a1020;
+    letter-spacing: 0.03em;
+    transition: color 0.3s;
+    min-width: 1ch;
+}
+
+.ws-word-item.is-found .ws-word-label {
+    color: #c0182a;
+    font-style: italic;
+}
+
+/* Hint button */
+.ws-hint-btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.45rem;
+    color: #c06080;
+    background: none;
+    border: 1px solid #f4a0bc;
+    border-radius: 10px;
+    padding: 0.2rem 0.45rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.ws-hint-btn:hover {
+    background: #f9a8d4;
+    color: #fff;
+    border-color: #f9a8d4;
+}
+
+/* Hint tooltip */
+.ws-hint-tip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #3a1020;
+    color: #ffe4ef;
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+    max-width: 220px;
+    white-space: normal;
+    text-align: center;
+}
+.ws-hint-tip::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #3a1020;
+}
+.ws-word-item { position: relative; }
+.ws-word-item:hover .ws-hint-tip,
+.ws-hint-btn:focus + .ws-hint-tip {
+    opacity: 1;
+}
+
+/* Celebration burst (GSAP spawns these) */
+.ws-burst {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.2rem;
+    z-index: 999;
+    will-change: transform, opacity;
+}
+
+/* Back button reuse */
+.ws-back-btn {
+    margin-top: 0.5rem;
+    opacity: 1 !important; /* always visible */
+}
+
+/* ========================================
+   RESPONSIVE — SCENE 6
+   ======================================== */
+@media (max-width: 600px) {
+    .ws-cell { width: 22px; height: 22px; font-size: 0.42rem; }
+    .ws-word-label { font-size: 0.75rem; }
 }

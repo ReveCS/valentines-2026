@@ -226,6 +226,9 @@
 
             <h2 class="puzzle-title" id="puzzle-title">Solve to see the full picture!</h2>
 
+            <!-- Always-visible back button -->
+            <button class="puzzle-persist-back-btn" id="puzzle-persist-back">← Back to Gifts</button>
+
             <!-- The 3×3 grid; tiles injected by JS -->
             <div class="puzzle-board" id="puzzle-board"></div>
 
@@ -241,9 +244,20 @@
         </div>
 
     </section>
+    <!-- Scene 6: Word Search -->
     <section class="scene" id="scene-6">
-        <div class="scene-content">
-            <h1 style="font-family:'Press Start 2P',cursive;color:#c06080;font-size:1rem;">Scene 6: Gallery 📸</h1>
+        <div class="wordsearch-wrapper" id="wordsearch-wrapper">
+
+            <h2 class="ws-title">Highlights of Our Last Year</h2>
+
+            <!-- Grid injected by JS -->
+            <div class="ws-grid" id="ws-grid"></div>
+
+            <!-- Word bank — first letter only until found -->
+            <div class="ws-bank" id="ws-bank"></div>
+
+            <button class="puzzle-persist-back-btn ws-back-btn" id="ws-back-btn">← Back to Gifts</button>
+
         </div>
     </section>
     <section class="scene" id="scene-7">
