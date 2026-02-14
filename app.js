@@ -943,6 +943,83 @@ const Scene6 = {
     }
 };
 
+
+// ========================================
+// SCENE 7 — YOUTUBE VIDEO
+// ========================================
+const Scene7 = {
+    init() {
+        this.wrapper     = document.getElementById('video-wrapper');
+        this.backBtn     = document.getElementById('video-back-btn');
+        this.continueBtn = document.getElementById('video-continue-btn');
+
+        this.backBtn.addEventListener('click', () => {
+            gsap.to(this.wrapper, {
+                opacity: 0, y: 20, duration: 0.4, ease: 'power2.in',
+                onComplete: () => SceneManager.goToScene(4)
+            });
+        });
+
+        this.continueBtn.addEventListener('click', () => {
+            gsap.to(this.wrapper, {
+                opacity: 0, y: -20, duration: 0.5, ease: 'power2.in',
+                onComplete: () => SceneManager.goToScene(8)
+            });
+        });
+    },
+
+    enter() {
+        gsap.set(this.wrapper, { opacity: 0, y: 40 });
+        gsap.to(this.wrapper, {
+            opacity: 1, y: 0,
+            duration: 0.8, ease: 'power3.out'
+        });
+    }
+};
+
+// ========================================
+// SCENE 8 — THE END
+// ========================================
+const Scene8 = {
+    init() {
+        this.wrapper = document.getElementById('ending-wrapper');
+        this.l1      = document.getElementById('ending-l1');
+        this.l2      = document.getElementById('ending-l2');
+        this.l3      = document.getElementById('ending-l3');
+        this.hearts  = document.getElementById('ending-hearts');
+    },
+
+    enter() {
+        // Reset
+        gsap.set([this.l1, this.l2, this.l3, this.hearts], { opacity: 0, y: 30 });
+        gsap.set(this.wrapper, { opacity: 1 });
+
+        const tl = gsap.timeline();
+
+        // "The End!" — big dramatic entrance
+        tl.to(this.l1, {
+            opacity: 1, y: 0,
+            duration: 1.0,
+            ease: 'back.out(1.4)',
+            delay: 0.3
+        })
+        // Rest of the message fades in line by line
+        .to(this.l2, {
+            opacity: 1, y: 0,
+            duration: 0.7, ease: 'power2.out'
+        }, '+=0.15')
+        .to(this.l3, {
+            opacity: 1, y: 0,
+            duration: 0.7, ease: 'power2.out'
+        }, '-=0.3')
+        // Hearts float in
+        .to(this.hearts, {
+            opacity: 1, y: 0,
+            duration: 0.6, ease: 'power2.out'
+        }, '+=0.2');
+    }
+};
+
 // ========================================
 // BOOT — wire everything up
 // ========================================
@@ -954,6 +1031,8 @@ document.addEventListener('DOMContentLoaded', () => {
     Scene4.init();
     Scene5.init();
     Scene6.init();
+    Scene7.init();
+    Scene8.init();
 
     // Photo fallback: if image fails to load, show emoji heart instead
     const photo = document.getElementById('vc-photo');
@@ -973,4 +1052,6 @@ SceneManager.goToScene = function(n) {
     if (n === 4) setTimeout(() => Scene4.enter(), 350);
     if (n === 5) setTimeout(() => Scene5.enter(), 350);
     if (n === 6) setTimeout(() => Scene6.enter(), 350);
+    if (n === 7) setTimeout(() => Scene7.enter(), 350);
+    if (n === 8) setTimeout(() => Scene8.enter(), 400);
 };

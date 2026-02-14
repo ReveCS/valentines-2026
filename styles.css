@@ -1460,3 +1460,158 @@ body {
     .ws-cell { width: 22px; height: 22px; font-size: 0.42rem; }
     .ws-word-label { font-size: 0.75rem; }
 }
+
+/* ========================================
+   SCENE 7 — YOUTUBE VIDEO
+   ======================================== */
+#scene-7 {
+    background:
+        radial-gradient(circle, rgba(255,160,200,0.18) 1px, transparent 1px),
+        linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-size: 20px 20px, 100% 100%;
+}
+
+.video-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 780px;
+    opacity: 0; /* GSAP fades in */
+}
+
+/* Title */
+.video-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: #c0182a;
+    text-align: center;
+    text-shadow: 1px 1px 0 rgba(160,10,30,0.15);
+}
+
+/* 16:9 responsive iframe container */
+.video-frame-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 3px #f4a0bc,
+        0 12px 40px rgba(220,80,120,0.25);
+    background: #1a0d1f; /* dark bg while loading */
+}
+
+.video-iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+}
+
+/* Action row: back + continue */
+.video-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Continue button — bold pink, matching Yes button style */
+.video-continue-btn {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.65rem;
+    padding: 0.75rem 1.4rem;
+    background: #f472a8;
+    color: #fff;
+    border: calc(var(--px)*0.5) solid #e0417e;
+    border-radius: calc(var(--px)*0.5);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    box-shadow:
+        0 calc(var(--px)*0.5) 0 #c0185e,
+        0 4px 16px rgba(244,114,168,0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.video-continue-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow:
+        0 calc(var(--px)*0.75) 0 #c0185e,
+        0 8px 24px rgba(244,114,168,0.5);
+}
+.video-continue-btn:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 1px 0 #c0185e;
+}
+
+/* Back button inside video scene — always visible */
+.video-back-btn {
+    opacity: 1 !important;
+}
+
+/* ========================================
+   SCENE 8 — THE END
+   ======================================== */
+#scene-8 {
+    background:
+        radial-gradient(circle, rgba(255,160,200,0.18) 1px, transparent 1px),
+        linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-size: 20px 20px, 100% 100%;
+}
+
+.ending-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 2rem;
+    text-align: center;
+    opacity: 0; /* GSAP animates in */
+}
+
+.ending-line {
+    font-family: 'Great Vibes', cursive;
+    color: #c0182a;
+    line-height: 1.15;
+    opacity: 0; /* each line fades in separately */
+    text-shadow:
+        1px 1px 0  rgba(160,10,30,0.2),
+        0   3px 16px rgba(160,10,30,0.12);
+}
+
+.ending-line--1 {
+    font-size: clamp(3.5rem, 10vw, 6rem);
+}
+
+.ending-line--2,
+.ending-line--3 {
+    font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+}
+
+.ending-hearts {
+    margin-top: 1.2rem;
+    display: flex;
+    gap: 0.6rem;
+    font-size: 1.8rem;
+    opacity: 0;
+}
+
+.ending-hearts span {
+    display: inline-block;
+    animation: heart-float-end 2.5s ease-in-out infinite;
+}
+.ending-hearts span:nth-child(1) { animation-delay: 0s;    font-size: 2.2rem; }
+.ending-hearts span:nth-child(2) { animation-delay: 0.3s; }
+.ending-hearts span:nth-child(3) { animation-delay: 0.6s;  font-size: 2rem; }
+.ending-hearts span:nth-child(4) { animation-delay: 0.9s;  font-size: 1.5rem; }
+.ending-hearts span:nth-child(5) { animation-delay: 1.2s;  font-size: 2rem; }
+
+@keyframes heart-float-end {
+    0%, 100% { transform: translateY(0)    rotate(-5deg); }
+    50%       { transform: translateY(-10px) rotate(5deg); }
+}

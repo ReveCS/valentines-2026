@@ -260,9 +260,45 @@
 
         </div>
     </section>
+    <!-- Scene 7: YouTube Video -->
     <section class="scene" id="scene-7">
-        <div class="scene-content">
-            <h1 style="font-family:'Press Start 2P',cursive;color:#c06080;font-size:1rem;">Scene 7: Video 🎬</h1>
+        <div class="video-wrapper" id="video-wrapper">
+
+            <h2 class="video-title">A Blast into the Past</h2>
+
+            <!--
+                Replace VIDEO_ID below with your YouTube video ID.
+                e.g. for https://youtube.com/watch?v=dQw4w9WgXcQ → use dQw4w9WgXcQ
+            -->
+            <div class="video-frame-wrap">
+                <iframe
+                    id="yt-player"
+                    class="video-iframe"
+                    src="https://www.youtube.com/embed/VIDEO_ID?rel=0&modestbranding=1"
+                    title="A Blast into the Past"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <div class="video-actions">
+                <button class="puzzle-persist-back-btn video-back-btn" id="video-back-btn">← Back to Gifts</button>
+                <button class="video-continue-btn" id="video-continue-btn">Continue →</button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Scene 8: The End -->
+    <section class="scene" id="scene-8">
+        <div class="ending-wrapper" id="ending-wrapper">
+            <p class="ending-line ending-line--1" id="ending-l1">The End!</p>
+            <p class="ending-line ending-line--2" id="ending-l2">Can't wait to spend the rest of</p>
+            <p class="ending-line ending-line--3" id="ending-l3">Valentine's Day with my Babes.</p>
+            <div class="ending-hearts" id="ending-hearts">
+                <span>💖</span><span>🌸</span><span>💕</span><span>✨</span><span>💗</span>
+            </div>
         </div>
     </section>
 
