@@ -509,7 +509,7 @@ const Scene4 = {
 const Scene5 = {
     SIZE: 3,
     // !! Replace with your image path, e.g. 'assets/puzzle.jpg'
-    IMAGE: 'assets/puzzle.jpg',
+    IMAGE: 'assets/puzzle.png',
 
     init() {
         this.board        = document.getElementById('puzzle-board');
