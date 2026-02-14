@@ -562,8 +562,8 @@ const Scene5 = {
         let state = [...solved];
         let emptyIdx = total - 1;
 
-        // 3-4 random legal moves from solved (very beginner friendly)
-        const shuffleMoves = 3 + Math.floor(Math.random() * 2); // 3 or 4
+        // 5-8 random legal moves from solved (easy but with a little more challenge)
+        const shuffleMoves = 5 + Math.floor(Math.random() * 4); // 5, 6, 7, or 8
         for (let m = 0; m < shuffleMoves; m++) {
             const neighbors = this._neighbors(emptyIdx, n);
             const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
